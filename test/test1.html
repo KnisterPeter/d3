@@ -10,22 +10,24 @@
 	</style>
 </head>
 <body>
-  <script type="text/javascript" src="../d3.js"></script>
+  <script type="text/javascript" src="../class.js"></script>
   <script type="text/javascript" src="../math.js"></script>
-  <script type="text/javascript" src="../renderer.js"></script>
+  <script type="text/javascript" src="../buffer.js"></script>
+  <script type="text/javascript" src="../main.js"></script>
   <script type="text/javascript" src="../renderable.js"></script>
+  <script type="text/javascript" src="../renderer.js"></script>
+  <script type="text/javascript" src="../resource.js"></script>
+  <script type="text/javascript" src="../material.js"></script>
+  <script type="text/javascript" src="../program.js"></script>
+  <script type="text/javascript" src="../mesh.js"></script>
   <script type="text/javascript">
   	var main = new d3.Main();
-  	
-    var buffer = main.getRenderer().createBufferXYZRGBA([
-        0.0,  1.0, 0.0,   1.0, 0.0, 0.0, 1.0,
-       -1.0, -1.0, 0.0,   0.0, 1.0, 0.0, 1.0,
-        1.0, -1.0, 0.0,   0.0, 0.0, 1.0, 1.0
-       ]);
-    var renderable = new d3.Renderable(buffer, main.getRenderer().defaultProgram);
-    renderable.setPosition([-1.5, 0.0, -7.0]);
-    
-    main.getRenderer().renderFrame(renderable);
+  	var r = main.getRenderer();
+    var mesh = r.createMesh('../resources/mesh1.mesh', function() {
+      var renderable = new d3.Renderable(mesh);
+      renderable.setPosition([-1.5, 0.0, -7.0]);
+      r.renderFrame(renderable);
+    });
   </script>
 </body>
 </html>

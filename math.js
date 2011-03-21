@@ -1,8 +1,7 @@
 /**
  * Based on the awesome http://code.google.com/p/glmatrix/
  */
-var d3 = d3 || {};
-(function() {
+d3.Module('d3', function(m) {
   var vec3 = {};
 
   /*
@@ -1778,9 +1777,9 @@ var d3 = d3 || {};
     return '[' + quat[0] + ', ' + quat[1] + ', ' + quat[2] + ', ' + quat[3] + ']'; 
   }
 
-  d3.Math = {};
-  d3.Math.Vector3 = vec3;
-  d3.Math.Matrix3 = mat3;
-  d3.Math.Matrix4 = mat4;
-  d3.Math.Quaternion4 = quat4;
-})();
+  m.Math = {};
+  m.Math.Vector3 = vec3;
+  m.Math.Matrix3 = mat3;
+  m.Math.Matrix4 = mat4;
+  m.Math.Quaternion4 = quat4;
+});

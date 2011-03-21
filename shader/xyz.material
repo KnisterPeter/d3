@@ -1,0 +1,13 @@
+{
+  "program": {
+    "attributes": {
+      "position": "aVertexPosition"
+    },
+    "uniforms": {
+      "model-view": "uMVMatrix",
+      "projection": "uPMatrix"
+    },
+    "vertex": "../shader/xyz.vertex",
+    "fragment": "../shader/xyz.fragment"
+  }
+}
