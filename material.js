@@ -7,19 +7,23 @@ d3.Module('d3', function(m) {
       this.SUPER(url);
     },
     
-    create: function(gl, callback) {
+    create: function(gl, callback, context) {
       this.get(function(data) {
         if (d3.isString(data)) {
           data = JSON.parse(data);
         }
         this.data = data;
+        
+        var onReady = function(program) {
+          this.program = program;
+          callback.call(context, this);
+        };
         if (this.data['program-ref']) {
-          this.program = (new d3.Program(this.data['program-ref'])).create(gl, callback);
+          (new d3.Program(this.data['program-ref'])).create(gl, onReady, this);
         } else if (this.data['program']) {
-          this.program = (new d3.Program(this.data['program'])).create(gl, callback);
+          (new d3.Program(this.data['program'])).create(gl, onReady, this);
         }
       });
-      return this;
     },
     
     apply: function(gl, config, mvMatrix, pMatrix) {

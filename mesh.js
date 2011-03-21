@@ -17,13 +17,14 @@ d3.Module('d3', function(m) {
           } else if (data['material']) {
             var matDescr = data['material'];
           }
-          this.material = (new d3.Material(matDescr)).create(gl, function() {
-            callback.call(context);
-          });
+          (new d3.Material(matDescr)).create(gl, function(material) {
+            this.material = material;
+            callback.call(context, this);
+          }, this);
         } else {
           this.buffer = data.buffer;
           this.material = data.material;
-          callback.call(context);
+          callback.call(context, this);
         }
       });
       return this;

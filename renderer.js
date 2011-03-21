@@ -29,16 +29,16 @@ d3.Module('d3', function(m) {
       return new d3.Buffer(this.gl, type, vertices);
     },
     
-    createMaterial: function(url, callback) {
-      return (new d3.Material(url)).create(this.gl, callback);
+    createMaterial: function(url, callback, context) {
+      (new d3.Material(url)).create(this.gl, callback, context);
     },
     
-    createProgram: function(url, callback) {
-      return (new d3.Program(url)).create(this.gl, callback);
+    createProgram: function(url, callback, context) {
+      (new d3.Program(url)).create(this.gl, callback, context);
     },
     
-    createMesh: function(url, callback) {
-      return (new d3.Mesh(url)).create(this.gl, callback);
+    createMesh: function(url, callback, context) {
+      (new d3.Mesh(url)).create(this.gl, callback, context);
     },
     
     renderFrame: function(renderable) {

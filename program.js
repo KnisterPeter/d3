@@ -8,7 +8,7 @@ d3.Module('d3', function(m) {
       this.SUPER(url);
     },
     
-    create: function(gl, callback) {
+    create: function(gl, callback, context) {
       this.get(function(descr) {
         if (d3.isString(descr)) {
           descr = JSON.parse(descr);
@@ -27,10 +27,9 @@ d3.Module('d3', function(m) {
             this.uniforms[i] = gl.getUniformLocation(this.program, this.uniforms[i]);
           }
 
-          callback();
+          callback.call(context, this);
         });
       });
-      return this;
     },
     
     _loadShader: function(vertex, fragment, callback) {
