@@ -67,8 +67,10 @@ d3.Module('d3', function(m) {
     use: function(gl, config, mvMatrix, pMatrix) {
       gl.useProgram(this.program);
       for (var i in config.entries) {
-        gl.vertexAttribPointer(this.attributes[i], config.entries[i].size, 
-            gl.FLOAT, false, config.offset, config.entries[i].offset);
+        if (typeof(this.attributes[i]) != 'undefined') {
+          gl.vertexAttribPointer(this.attributes[i], config.entries[i].size, 
+              gl.FLOAT, false, config.offset, config.entries[i].offset);
+        }
       }
       gl.uniformMatrix4fv(this.uniforms['model-view'], false, mvMatrix);
       gl.uniformMatrix4fv(this.uniforms['projection'], false, pMatrix);
