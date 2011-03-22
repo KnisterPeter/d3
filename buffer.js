@@ -1,22 +1,26 @@
 d3.Module('d3', function(m) {
   m.Class('Buffer', {
-    buf: null,
+    vertices: null,
+    indices: null,
     xyz: false,
     rgba: false,
     config: null,
     
     construct: function(gl, type, data) {
-      this.buf = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.buf);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
+      this.vertices = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data.vertices), gl.STATIC_DRAW);
+      this.indices = gl.createBuffer();
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indices);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(data.indices), gl.STATIC_DRAW);
 
       var itemSize = type.length;
       this.config = {
           offset: itemSize * 4,
-          items: data.length / itemSize,
+          items: data.vertices.length / itemSize,
           entries: {}
       };
-      
+
       if (type == 'xyz') {
         this.config.entries.position = this._createEntry(3, 0*4);
       } else if (type == 'xyzrgba') {
@@ -30,9 +34,13 @@ d3.Module('d3', function(m) {
       return this.config;
     },
     
+    prepare: function(gl) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indices);
+    },
+    
     render: function(gl) {
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.buf);
-      gl.drawArrays(gl.TRIANGLES, 0, this.config.items);
+      gl.drawElements(gl.TRIANGLE_STRIP, this.config.items, gl.UNSIGNED_BYTE, 0);
     }
   });
 });
