@@ -3,6 +3,8 @@ d3.Module('d3', function(m) {
 
   m.Class('Renderer', {
     gl: null,
+    root: null,
+    mvMatrix: null,
     pMatrix: null,
     
     construct: function(canvas) {
@@ -16,13 +18,17 @@ d3.Module('d3', function(m) {
         throw new Error('Failed to initialize WebGL');
       }
       
+      this.root = new d3.Node();
+      this.updateViewport();
+      
       this.gl.clearColor(0, 0, 0, 1);
       this.gl.clearDepth(1);
       this.gl.enable(this.gl.DEPTH_TEST);
       this.gl.depthFunc(this.gl.LEQUAL);
-      
-      pMatrix = Matrix4.create();
-      Matrix4.perspective(45, this.gl.viewportWidth / this.gl.viewportHeight, 0.1, 10000.0, pMatrix);
+    },
+
+    getRoot: function() {
+      return this.root;
     },
     
     createBuffer: function(type, vertices) {
@@ -41,13 +47,34 @@ d3.Module('d3', function(m) {
       (new d3.Mesh(url)).create(this.gl, callback, context);
     },
     
-    renderFrame: function(renderable) {
+    updateViewport: function() {
       this.gl.viewport(0, 0, this.gl.viewportWidth, this.gl.viewportHeight);
-      this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-
-      var mvMatrix = Matrix4.create();
-      Matrix4.identity(mvMatrix);
-      renderable.render(this.gl, Matrix4.create(mvMatrix), pMatrix);
+      this.pMatrix = Matrix4.create();
+      Matrix4.perspective(45, this.gl.viewportWidth / this.gl.viewportHeight, 0.1, 10000.0, this.pMatrix);
+      this.mvMatrix = Matrix4.create();
+    },
+    
+    renderFrame: function(animLoop, context) {
+      var time = new Date().getTime();
+      var tick = d3.bind(function() {
+        animLoop.call(context, new Date().getTime() - time);
+        time = new Date().getTime();
+        
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        Matrix4.identity(this.mvMatrix);
+        this.root.render(this.gl, Matrix4.create(this.mvMatrix), this.pMatrix);
+    
+        this.requestAnimFrame(tick);
+      }, this);
+      this.requestAnimFrame(tick);
+//window.tick = tick;
+    },
+    
+    requestAnimFrame: function(callback) {
+      (window.requestAnimationFrame
+        || window.webkitRequestAnimationFrame
+        || window.mozRequestAnimationFrame)
+          (callback);
     }
   });
 });

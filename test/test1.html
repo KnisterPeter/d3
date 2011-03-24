@@ -10,23 +10,31 @@
 	</style>
 </head>
 <body>
-  <script type="text/javascript" src="../class.js"></script>
-  <script type="text/javascript" src="../math.js"></script>
-  <script type="text/javascript" src="../buffer.js"></script>
-  <script type="text/javascript" src="../main.js"></script>
-  <script type="text/javascript" src="../renderable.js"></script>
-  <script type="text/javascript" src="../renderer.js"></script>
-  <script type="text/javascript" src="../resource.js"></script>
-  <script type="text/javascript" src="../material.js"></script>
-  <script type="text/javascript" src="../program.js"></script>
-  <script type="text/javascript" src="../mesh.js"></script>
+  <script type="text/javascript" src="../core/class.js"></script>
+  <script type="text/javascript" src="../core/math.js"></script>
+  <script type="text/javascript" src="../core/main.js"></script>
+  <script type="text/javascript" src="../core/node.js"></script>
+  <script type="text/javascript" src="../core/renderable.js"></script>
+  <script type="text/javascript" src="../core/resource.js"></script>
+  <script type="text/javascript" src="../core/material.js"></script>
+  <script type="text/javascript" src="../core/mesh.js"></script>
+  <script type="text/javascript" src="../webgl/buffer.js"></script>
+  <script type="text/javascript" src="../webgl/renderer.js"></script>
+  <script type="text/javascript" src="../webgl/program.js"></script>
   <script type="text/javascript">
-    var main = new d3.Main();
-    var r = main.getRenderer();
-    r.createMesh('../resources/mesh1.mesh', function(mesh) {
-      var renderable = new d3.Renderable(mesh);
-      renderable.setPosition([-1.5, 0.0, -7.0]);
-      r.renderFrame(renderable);
+    var main = new d3.Main(function(renderer) {
+      renderer.createMesh('../resources/mesh1.mesh', function(mesh) {
+        var r1 = new d3.Renderable(mesh);
+        r1.setPosition([-2, 0.0, -7.0]);
+        renderer.getRoot().addChild(r1);
+
+        var r2 = new d3.Renderable(mesh);
+        r2.setPosition([2, 0.0, -7.0]);
+        renderer.getRoot().addChild(r2);
+        
+        renderer.renderFrame(function(time) {
+        }, this);
+      });
     });
   </script>
 </body>

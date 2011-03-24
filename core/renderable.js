@@ -1,21 +1,16 @@
 d3.Module('d3', function(m) {
   var Vector3 = d3.Math.Vector3;
-  var Matrix4 = d3.Math.Matrix4;
 
-  m.Class('Renderable', {
+  m.Class('Renderable', d3.Node, {
     mesh: null,
-    pos: Vector3.create(),
     
     construct: function(mesh) {
+      this.SUPER();
       this.mesh = mesh;
     },
     
-    setPosition: function(vec) {
-      Vector3.set(vec, this.pos);
-    },
-    
     render: function(gl, mvMatrix, pMatrix) {
-      Matrix4.translate(mvMatrix, this.pos);
+      this.SUPER(gl, mvMatrix, pMatrix);
       this.mesh.render(gl, mvMatrix, pMatrix);
     }
   });

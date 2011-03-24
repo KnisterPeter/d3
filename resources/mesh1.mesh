@@ -11,5 +11,4 @@
       0, 1, 2, 3
     ]
   },
-  "material-ref": "../shader/xyzrgba.material"
-}
+  "material-ref": "../shader/xyzrgba.material"}

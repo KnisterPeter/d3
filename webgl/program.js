@@ -49,7 +49,7 @@ d3.Module('d3', function(m) {
       gl.attachShader(this.program, fShader);
       gl.linkProgram(this.program);
       if (!gl.getProgramParameter(this.program, gl.LINK_STATUS)) {
-        throw new Error('Failed to link shader program');
+        throw new Error(gl.getProgramInfoLog(this.program));
       }
     },
     

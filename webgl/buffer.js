@@ -12,12 +12,12 @@ d3.Module('d3', function(m) {
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data.vertices), gl.STATIC_DRAW);
       this.indices = gl.createBuffer();
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indices);
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(data.indices), gl.STATIC_DRAW);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data.indices), gl.STATIC_DRAW);
 
       var itemSize = type.length;
       this.config = {
           offset: itemSize * 4,
-          items: data.vertices.length / itemSize,
+          items: data.indices.length,
           entries: {}
       };
 
@@ -40,7 +40,7 @@ d3.Module('d3', function(m) {
     },
     
     render: function(gl) {
-      gl.drawElements(gl.TRIANGLE_STRIP, this.config.items, gl.UNSIGNED_BYTE, 0);
+      gl.drawElements(gl.TRIANGLE_STRIP, this.config.items, gl.UNSIGNED_SHORT, 0);
     }
   });
 });
