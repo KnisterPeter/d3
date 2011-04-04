@@ -1512,9 +1512,9 @@ d3.Module('d3', function(m) {
    */
   quat4.inverse = function(quat, dest) {
     if(!dest || quat == dest) {
-      quat[0] *= 1;
-      quat[1] *= 1;
-      quat[2] *= 1;
+      quat[0] *= -1;
+      quat[1] *= -1;
+      quat[2] *= -1;
       return quat;
     }
     dest[0] = -quat[0];
@@ -1761,6 +1761,31 @@ d3.Module('d3', function(m) {
       dest[3] = 1.0 - lerp * quat[3] + eps_lerp * quat2[3];
       
       return dest;
+  }
+
+  quat4.rotateByAngles = function(ax, ay, az) {
+    var qx = quat4.create();
+    var qy = quat4.create();
+    var qz = quat4.create();
+  
+    var hax = ax * Math.PI / 360;
+    var sinx = Math.sin(hax);
+    var cosx = Math.cos(hax);
+    qx.set([sinx, 0, 0, cosx]);
+    
+    var hay = ay * Math.PI / 360;
+    var siny = Math.sin(hay);
+    var cosy = Math.cos(hay);
+    qy.set([cosy, 0, siny, 0]);
+    
+    var haz = az * Math.PI / 360;
+    var sinz = Math.sin(haz);
+    var cosz = Math.cos(haz);
+    qz.set([cosz, 0, 0, sinz]);
+    
+    var res = quat4.create();
+    quat4.multiply(qx, qy, res);
+    return quat4.multiply(res, qz);
   }
 
   /*

@@ -1,5 +1,6 @@
 d3.Module('d3', function(m) {
   m.Class('Buffer', {
+    data: null,
     vertices: null,
     indices: null,
     xyz: false,
@@ -7,6 +8,7 @@ d3.Module('d3', function(m) {
     config: null,
     
     construct: function(gl, type, data) {
+      this.data = data;
       this.vertices = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data.vertices), gl.STATIC_DRAW);
@@ -37,10 +39,11 @@ d3.Module('d3', function(m) {
     prepare: function(gl) {
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices);
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indices);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.data.indices), gl.STATIC_DRAW);
     },
     
     render: function(gl) {
-      gl.drawElements(gl.TRIANGLE_STRIP, this.config.items, gl.UNSIGNED_SHORT, 0);
+      gl.drawElements(gl.TRIANGLES, this.config.items, gl.UNSIGNED_SHORT, 0);
     }
   });
 });

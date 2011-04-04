@@ -26,10 +26,12 @@
       renderer.createMesh('../resources/mesh1.mesh', function(mesh) {
         var r1 = new d3.Renderable(mesh);
         r1.setPosition([-2, 0.0, -7.0]);
+        r1.setRotation([45, 0, 0]);
         renderer.getRoot().addChild(r1);
 
         var r2 = new d3.Renderable(mesh);
         r2.setPosition([2, 0.0, -7.0]);
+        r2.setRotation([45, 0, 0]);
         renderer.getRoot().addChild(r2);
         
         renderer.renderFrame(function(time) {
