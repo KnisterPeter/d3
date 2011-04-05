@@ -6,13 +6,13 @@ d3.Module('d3', function(m) {
   m.Class('Node', {
     position: null,
     rotation: null,
-    scalation: null,
+    scale: null,
     children: null,
     
     construct: function() {
       this.position = Vector3.create();
       this.rotation = Vector3.create();
-      this.scalation = Vector3.create([1, 1, 1]);
+      this.scale = Vector3.create([1, 1, 1]);
       this.children = [];
     },
     
@@ -36,8 +36,8 @@ d3.Module('d3', function(m) {
       this.rotation[2] += angel;
     },
     
-    setScalation: function(vec) {
-      Vector3.set(vec, this.scalation);
+    setScale: function(vec) {
+      Vector3.set(vec, this.scale);
     },
     
     addChild: function(child) {
@@ -49,7 +49,7 @@ d3.Module('d3', function(m) {
       Matrix4.translate(mvMatrix, this.position);
       var q = Quaternion4.rotateByAngles(this.rotation[0], this.rotation[1], this.rotation[2]);
       Matrix4.multiply(mvMatrix, Quaternion4.toMat4(q));
-      Matrix4.scale(mvMatrix, this.scalation);
+      Matrix4.scale(mvMatrix, this.scale);
       
       this.children.forEach(function(child) {
         child.render(gl, Matrix4.create(mvMatrix), pMatrix);
