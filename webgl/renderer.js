@@ -67,7 +67,6 @@ d3.Module('d3', function(m) {
         this.requestAnimFrame(tick);
       }, this);
       this.requestAnimFrame(tick);
-//window.tick = tick;
     },
     
     requestAnimFrame: function(callback) {
