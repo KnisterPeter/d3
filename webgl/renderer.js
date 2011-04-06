@@ -31,6 +31,10 @@ d3.Module('d3', function(m) {
       return this.root;
     },
     
+    setRoot: function(root) {
+      this.root = root;
+    },
+    
     createBuffer: function(type, vertices) {
       return new d3.Buffer(this.gl, type, vertices);
     },
@@ -45,6 +49,10 @@ d3.Module('d3', function(m) {
     
     createMesh: function(url, callback, context) {
       (new d3.Mesh(url)).create(this.gl, callback, context);
+    },
+    
+    createScene: function(url, typeFactory, callback, context) {
+      (new d3.Scene(url, typeFactory)).create(this.gl, callback, context);
     },
     
     updateViewport: function() {

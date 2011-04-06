@@ -9,6 +9,10 @@ d3.Module('d3', function(m) {
       this.mesh = mesh;
     },
     
+    setMesh: function(mesh) {
+      this.mesh = mesh;
+    },
+    
     render: function(gl, mvMatrix, pMatrix) {
       this.SUPER(gl, mvMatrix, pMatrix);
       this.mesh.render(gl, mvMatrix, pMatrix);

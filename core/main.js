@@ -28,4 +28,10 @@ d3.Module('d3', function(m) {
   };
   m.isString = function(o) { return typeof(o) == 'string'; };
   m.isFunction = function(f) { return typeof(f) == 'function'; };
+  m.resolve = function(n) {
+    var r = window; 
+    var s = n.split('.'); 
+    for (var p in s) { r = r[s[p]]; } 
+    return r;
+  };
 });
