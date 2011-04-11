@@ -72,6 +72,8 @@ d3.Module('d3', function(m) {
               gl.FLOAT, false, config.offset, config.entries[i].offset);
         }
       }
+      
+      this.uniforms['tex0'] && gl.uniform1i(this.uniforms['tex0'], 0);
       gl.uniformMatrix4fv(this.uniforms['model-view'], false, mvMatrix);
       gl.uniformMatrix4fv(this.uniforms['projection'], false, pMatrix);
     }

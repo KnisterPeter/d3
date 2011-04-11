@@ -1,0 +1,18 @@
+{
+  "tex0": {
+    "ref": "../resources/nehe.gif"
+  },
+  "program": {
+    "attributes": {
+      "position": "aVertexPosition",
+      "tex0": "aTextureCoord"
+    },
+    "uniforms": {
+      "tex0": "uSampler",
+      "model-view": "uMVMatrix",
+      "projection": "uPMatrix"
+    },
+    "vertex": "../shader/xyzuv.vertex",
+    "fragment": "../shader/xyzuv.fragment"
+  }
+}

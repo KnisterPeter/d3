@@ -28,6 +28,9 @@ d3.Module('d3', function(m) {
       } else if (type == 'xyzrgba') {
         this.config.entries.position = this._createEntry(3, 0*4);
         this.config.entries.color = this._createEntry(4, 3*4);
+      } else if (type == 'xyzuv') {
+        this.config.entries.position = this._createEntry(3, 0*4);
+        this.config.entries.tex0 = this._createEntry(2, 3*4);
       }
     },
     _createEntry: function(size, offset) { return { size: size, offset: offset}; },
