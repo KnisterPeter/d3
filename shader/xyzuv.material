@@ -1,6 +1,8 @@
 {
   "tex0": {
-    "ref": "../resources/nehe.gif"
+    "ref": "../resources/nehe.gif",
+    "filter-mag": "linear",
+    "filter-min": "linear-mipmap-linear"
   },
   "program": {
     "attributes": {
