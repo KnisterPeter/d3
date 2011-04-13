@@ -21,6 +21,7 @@ d3.Module('d3', function(m) {
       this.root = new d3.Node();
       this.updateViewport();
       
+      this.gl.enable(this.gl.TEXTURE_2D);
       this.gl.clearColor(0, 0, 0, 1);
       this.gl.clearDepth(1);
       this.gl.enable(this.gl.DEPTH_TEST);
