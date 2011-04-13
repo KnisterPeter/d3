@@ -1,13 +1,6 @@
 <html>
 <head>
-	<style type="text/css">
-		html, body {
-			width: 100%;
-			height: 100%;
-			margin: 0;
-			overflow: hidden;
-		}
-	</style>
+	<link rel="stylesheet" href="../resources/d3.css" type="text/css" />
 </head>
 <body>
   <script type="text/javascript" src="../core/class.js"></script>
@@ -19,12 +12,13 @@
   <script type="text/javascript" src="../core/material.js"></script>
   <script type="text/javascript" src="../core/mesh.js"></script>
   <script type="text/javascript" src="../core/scene.js"></script>
+  <script type="text/javascript" src="../core/input.js"></script>
   <script type="text/javascript" src="../webgl/buffer.js"></script>
   <script type="text/javascript" src="../webgl/renderer.js"></script>
   <script type="text/javascript" src="../webgl/program.js"></script>
   <script type="text/javascript" src="../webgl/texture.js"></script>
   <script type="text/javascript">
-    var main = new d3.Main(function(renderer) {
+    new d3.Main(function(main, renderer) {
       renderer.createMesh('../resources/mesh2.mesh', function(mesh) {
         var r1 = new d3.Renderable(mesh);
         r1.setPosition([0, 0.0, -4.0]);
@@ -32,10 +26,23 @@
         var last = 0;
         renderer.renderFrame(function(time) {
           var now = new Date().getTime();
-          if (last != 0) {
-            var elapsed = now - last;
-            r1.yaw(90 * elapsed / 1000);
-            r1.pitch(45 * elapsed / 1000);
+          if (main.getInput().isKeyPressed(d3.Input.KEY_UP)) {
+            r1.yaw(5);
+          }
+          if (main.getInput().isKeyPressed(d3.Input.KEY_DOWN)) {
+            r1.yaw(-5);
+          }
+          if (main.getInput().isKeyPressed(d3.Input.KEY_LEFT)) {
+            r1.pitch(5);
+          }
+          if (main.getInput().isKeyPressed(d3.Input.KEY_RIGHT)) {
+            r1.pitch(-5);
+          }
+          if (main.getInput().isKeyPressed(d3.Input.KEY_PAGE_UP)) {
+            r1.roll(5);
+          }
+          if (main.getInput().isKeyPressed(d3.Input.KEY_PAGE_DOWN)) {
+            r1.roll(-5);
           }
           last = now;
         }, this);
@@ -44,3 +51,4 @@
   </script>
 </body>
 </html>
+

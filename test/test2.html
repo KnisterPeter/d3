@@ -20,11 +20,12 @@
   <script type="text/javascript" src="../core/material.js"></script>
   <script type="text/javascript" src="../core/mesh.js"></script>
   <script type="text/javascript" src="../core/scene.js"></script>
+  <script type="text/javascript" src="../core/input.js"></script>
   <script type="text/javascript" src="../webgl/buffer.js"></script>
   <script type="text/javascript" src="../webgl/renderer.js"></script>
   <script type="text/javascript" src="../webgl/program.js"></script>
   <script type="text/javascript">
-    new d3.Main(function(renderer) {
+    new d3.Main(function(main, renderer) {
       renderer.createScene('../resources/scene1.scene', new d3.TypeFactory(), function(scene) {
         renderer.setRoot(scene.getRoot());
         var last = 0;

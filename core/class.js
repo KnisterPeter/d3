@@ -56,4 +56,11 @@
     clazz.extend = this.extend || this.create;
     return clazz;  
   };
+  
+  d3.lang.resolve = function(n) {
+    var r = window; 
+    var s = n.split('.'); 
+    for (var p in s) { r = r[s[p]]; } 
+    return r;
+  };
 })();

@@ -2,6 +2,7 @@ d3.Module('d3', function(m) {
   m.Class('Main', {
     canvas: null,
     renderer: null,
+    input: null,
 
     construct: function(id, callback) {
       if (!callback && d3.isFunction(id)) {
@@ -14,11 +15,17 @@ d3.Module('d3', function(m) {
         this.canvas = document.createElement('canvas');
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
+        this.canvas.style.cursor = 'url(../resources/blank.cur)';
         document.getElementsByTagName('body')[0].appendChild(this.canvas);
       }
-      
+
+      this.input = new d3.Input();      
       this.renderer = new d3.Renderer(this.canvas);
-      callback(this.renderer);
+      callback(this, this.renderer);
+    },
+    
+    getInput: function() {
+      return this.input
     }
   });
   
@@ -28,10 +35,4 @@ d3.Module('d3', function(m) {
   };
   m.isString = function(o) { return typeof(o) == 'string'; };
   m.isFunction = function(f) { return typeof(f) == 'function'; };
-  m.resolve = function(n) {
-    var r = window; 
-    var s = n.split('.'); 
-    for (var p in s) { r = r[s[p]]; } 
-    return r;
-  };
 });
