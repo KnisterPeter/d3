@@ -1,8 +1,10 @@
 d3.Module('d3', function(m) {
   m.Class('Input', {
+    config: null,
     keys: null,
     
-    construct: function() {
+    construct: function(config) {
+      this.config = config || {};
       this.keys = [];
     
       window.addEventListener('keydown', d3.bind(this.keyDown, this), true);
@@ -15,11 +17,11 @@ d3.Module('d3', function(m) {
     },
   
     keyDown: function(e) {
-      e.preventDefault();
+      this.config.preventDefaults && e.preventDefault();
       this.keys[e.which] = true;
     },
     keyUp: function(e) {
-      e.preventDefault();
+      this.config.preventDefaults && e.preventDefault();
       this.keys[e.which] = false;
     },
     mouseMove: function(e) {

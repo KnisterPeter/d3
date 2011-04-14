@@ -1,6 +1,6 @@
 {
   "tex0": {
-    "ref": "../resources/nehe.gif",
+    "ref": "../resources/crate.gif",
     "filter-mag": "linear",
     "filter-min": "linear-mipmap-linear"
   },

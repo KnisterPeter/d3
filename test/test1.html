@@ -17,7 +17,12 @@
   <script type="text/javascript" src="../webgl/renderer.js"></script>
   <script type="text/javascript" src="../webgl/program.js"></script>
   <script type="text/javascript">
-    new d3.Main(function(main, renderer) {
+    var config = {
+      input: {
+        preventDefaults: false
+      }
+    };
+    new d3.Main(config, function(main, renderer) {
       renderer.createMesh('../resources/mesh1.mesh', function(mesh) {
         var r1 = new d3.Renderable(mesh);
         r1.setPosition([-2, 0.0, -7.0]);

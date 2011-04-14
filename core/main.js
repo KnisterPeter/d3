@@ -4,13 +4,13 @@ d3.Module('d3', function(m) {
     renderer: null,
     input: null,
 
-    construct: function(id, callback) {
-      if (!callback && d3.isFunction(id)) {
-        callback = id;
-        id = undefined;
+    construct: function(config, callback) {
+      if (!callback && d3.isFunction(config)) {
+        callback = config;
+        config = {};
       }
-      if (id) {
-        this.canvas = document.getElementById(id);
+      if (config.id) {
+        this.canvas = document.getElementById(config.id);
       } else {
         this.canvas = document.createElement('canvas');
         this.canvas.width = window.innerWidth;
@@ -19,7 +19,7 @@ d3.Module('d3', function(m) {
         document.getElementsByTagName('body')[0].appendChild(this.canvas);
       }
 
-      this.input = new d3.Input();      
+      this.input = new d3.Input(config.input);
       this.renderer = new d3.Renderer(this.canvas);
       callback(this, this.renderer);
     },
