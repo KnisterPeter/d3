@@ -16,22 +16,24 @@ d3.Module('d3', function(m) {
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indices);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data.indices), gl.STATIC_DRAW);
 
-      var itemSize = type.length;
+      var itemSize;
       this.config = {
-          offset: itemSize * 4,
           items: data.indices.length,
           entries: {}
       };
-
-      if (type == 'xyz') {
+      if (type == 'p') {
+        itemSize = 3;
         this.config.entries.position = this._createEntry(3, 0*4);
-      } else if (type == 'xyzrgba') {
+      } else if (type == 'pc') {
+        itemSize = 7;
         this.config.entries.position = this._createEntry(3, 0*4);
         this.config.entries.color = this._createEntry(4, 3*4);
-      } else if (type == 'xyzuv') {
+      } else if (type == 'pt') {
+        itemSize = 5;
         this.config.entries.position = this._createEntry(3, 0*4);
         this.config.entries.tex0 = this._createEntry(2, 3*4);
       }
+      this.config.offset = itemSize * 4;
     },
     _createEntry: function(size, offset) { return { size: size, offset: offset}; },
 
