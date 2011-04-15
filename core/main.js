@@ -15,7 +15,12 @@ d3.Module('d3', function(m) {
         this.canvas = document.createElement('canvas');
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
-        this.canvas.style.cursor = 'url(../resources/blank.cur)';
+        window.addEventListener('resize', d3.bind(function() {
+          this.canvas.width = window.innerWidth;
+          this.canvas.height = window.innerHeight;
+          this.renderer.resize(this.canvas.width, this.canvas.height);
+        }, this), true);
+        this.canvas.style.cursor = 'none';
         document.getElementsByTagName('body')[0].appendChild(this.canvas);
       }
 

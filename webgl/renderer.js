@@ -56,6 +56,12 @@ d3.Module('d3', function(m) {
       (new d3.Scene(url, typeFactory)).create(this.gl, callback, context);
     },
     
+    resize: function(width, height) {
+      this.gl.viewportWidth = width;
+      this.gl.viewportHeight = height;
+      this.updateViewport();
+    },
+    
     updateViewport: function() {
       this.gl.viewport(0, 0, this.gl.viewportWidth, this.gl.viewportHeight);
       this.pMatrix = Matrix4.create();
