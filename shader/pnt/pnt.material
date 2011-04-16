@@ -8,6 +8,7 @@
     "attributes": {
       "position": "aVertexPosition",
       "normal": "aVertexNormal",
+      "color": "aVertexColor",
       "tex0": "aTextureCoord"
     },
     "uniforms": {

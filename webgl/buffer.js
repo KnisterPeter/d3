@@ -37,6 +37,12 @@ d3.Module('d3', function(m) {
         this.config.entries.position = this._createEntry(3, 0*4);
         this.config.entries.normal = this._createEntry(3, 3*4);
         this.config.entries.tex0 = this._createEntry(2, 6*4);
+      } else if (type == 'pnct') {
+        itemSize = 12;
+        this.config.entries.position = this._createEntry(3, 0*4);
+        this.config.entries.normal = this._createEntry(3, 3*4);
+        this.config.entries.color = this._createEntry(4, 6*4);
+        this.config.entries.tex0 = this._createEntry(2, 10*4);
       }
       this.config.offset = itemSize * 4;
     },

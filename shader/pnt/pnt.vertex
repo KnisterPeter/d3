@@ -1,5 +1,6 @@
 attribute vec3 aVertexPosition;
 attribute vec3 aVertexNormal;
+attribute vec4 aVertexColor;
 attribute vec2 aTextureCoord;
 
 uniform mat4 uMVMatrix;
@@ -10,12 +11,15 @@ uniform vec3 uAmbientColor;
 uniform vec3 uLightingDirection;
 uniform vec3 uDirectionalColor;
 
+varying vec4 vColor;
 varying vec2 vTextureCoord;
 varying vec3 vLightWeighting;
 
 void main(void) {
   gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
   vTextureCoord = aTextureCoord;
+  
+  vColor = aVertexColor;
   
   vec3 transformedNormal = uNMatrix * aVertexNormal;
   float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
