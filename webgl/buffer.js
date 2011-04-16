@@ -32,6 +32,11 @@ d3.Module('d3', function(m) {
         itemSize = 5;
         this.config.entries.position = this._createEntry(3, 0*4);
         this.config.entries.tex0 = this._createEntry(2, 3*4);
+      } else if (type == 'pnt') {
+        itemSize = 8;
+        this.config.entries.position = this._createEntry(3, 0*4);
+        this.config.entries.normal = this._createEntry(3, 3*4);
+        this.config.entries.tex0 = this._createEntry(2, 6*4);
       }
       this.config.offset = itemSize * 4;
     },

@@ -14,7 +14,7 @@
       "model-view": "uMVMatrix",
       "projection": "uPMatrix"
     },
-    "vertex": "../shader/xyzuv.vertex",
-    "fragment": "../shader/xyzuv.fragment"
+    "vertex": "../shader/pt/pt.vertex",
+    "fragment": "../shader/pt/pt.fragment"
   }
 }

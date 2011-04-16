@@ -7,6 +7,6 @@
     "model-view": "uMVMatrix",
     "projection": "uPMatrix"
   },
-  "vertex": "../shader/xyzrgba.vertex",
-  "fragment": "../shader/xyzrgba.fragment"
+  "vertex": "../shader/pc/pc.vertex",
+  "fragment": "../shader/pc/pc.fragment"
 }
