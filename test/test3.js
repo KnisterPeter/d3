@@ -1,8 +1,14 @@
 new d3.Main(function(main, renderer) {
   renderer.createMesh('../resources/mesh2.mesh', function(mesh) {
+    
     var r1 = new d3.Renderable(mesh);
-    r1.setPosition([0, 0.0, -4.0]);
+    r1.setPosition([0, 0.0, -5.0]);
+    // Ambient Light
+    r1.addLight(new d3.Light([0.5, 0.6, 0.8]));
+    // Directional Light
+    r1.addLight(new d3.Light([0.2, 1, 0.2], [-1, -1, 1]));
     renderer.getRoot().addChild(r1);
+    
     var last = 0;
     renderer.renderFrame(function(time) {
       var now = new Date().getTime();

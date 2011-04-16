@@ -22,6 +22,7 @@ d3.Module('d3', function(m) {
       node.setPosition(data.position);
       node.setRotation(data.rotation);
       node.setScale(data.scale);
+      node.setLight(new d3.Light(data.light));
       
       if (data.children) {
         var n = data.children.length;

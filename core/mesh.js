@@ -35,9 +35,9 @@ d3.Module('d3', function(m) {
       }, this);
     },
     
-    render: function(gl, mvMatrix, pMatrix) {
+    render: function(gl, context, mvMatrix, pMatrix) {
       this.buffer.prepare(gl);
-      this.material.apply(gl, this.buffer.getConfig(), mvMatrix, pMatrix);
+      this.material.apply(gl, context, this.buffer.getConfig(), mvMatrix, pMatrix);
       this.buffer.render(gl);
     }
   });

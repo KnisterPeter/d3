@@ -1,4 +1,8 @@
 d3.Module('d3', function(m) {
+  
+  var Matrix3 = d3.Math.Matrix3;
+  var Matrix4 = d3.Math.Matrix4;
+  
   m.Class('Program', d3.Resource, {
     program: null,
     attributes: null,
@@ -64,7 +68,7 @@ d3.Module('d3', function(m) {
       return shader;
     },
 
-    use: function(gl, config, mvMatrix, pMatrix) {
+    use: function(gl, context, config, mvMatrix, pMatrix) {
       gl.useProgram(this.program);
       for (var i in config.entries) {
         if (typeof(this.attributes[i]) != 'undefined') {
@@ -74,6 +78,23 @@ d3.Module('d3', function(m) {
       }
       
       this.uniforms['tex0'] && gl.uniform1i(this.uniforms['tex0'], 0);
+      if (context.lights && context.lights.length > 0) {
+        for (var idx in context.lights) {
+          var light = context.lights[idx];
+          if (light.getDirection() != null) {
+            this.uniforms['ligth0-direction'] && gl.uniform3fv(this.uniforms['ligth0-direction'], light.getDirection());
+            this.uniforms['light0-color'] && gl.uniform3fv(this.uniforms['light0-color'], light.getColor());
+            if (this.uniforms['normal']) {
+              var normalMatrix = Matrix3.create();
+              Matrix4.toInverseMat3(mvMatrix, normalMatrix);
+              Matrix3.transpose(normalMatrix);
+              gl.uniformMatrix3fv(this.uniforms['normal'], false, normalMatrix);
+            }
+          } else {
+            this.uniforms['ambient'] && gl.uniform3fv(this.uniforms['ambient'], light.getColor());
+          }
+        }
+      }
       gl.uniformMatrix4fv(this.uniforms['model-view'], false, mvMatrix);
       gl.uniformMatrix4fv(this.uniforms['projection'], false, pMatrix);
     }

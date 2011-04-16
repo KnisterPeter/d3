@@ -7,6 +7,7 @@ var files = [
   'core/renderable.js',
   'core/resource.js', 
   'core/material.js', 
+  'core/light.js', 
   'core/mesh.js', 
   'core/scene.js', 
   'core/input.js', 

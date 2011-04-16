@@ -13,9 +13,9 @@ d3.Module('d3', function(m) {
       this.mesh = mesh;
     },
     
-    render: function(gl, mvMatrix, pMatrix) {
-      this.SUPER(gl, mvMatrix, pMatrix);
-      this.mesh.render(gl, mvMatrix, pMatrix);
+    render: function(gl, context, mvMatrix, pMatrix) {
+      this.SUPER(gl, context, mvMatrix, pMatrix);
+      this.mesh.render(gl, context, mvMatrix, pMatrix);
     }
   });
 });

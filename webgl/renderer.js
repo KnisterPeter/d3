@@ -77,7 +77,7 @@ d3.Module('d3', function(m) {
         
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         Matrix4.identity(this.mvMatrix);
-        this.root.render(this.gl, Matrix4.create(this.mvMatrix), this.pMatrix);
+        this.root.render(this.gl, {}, Matrix4.create(this.mvMatrix), this.pMatrix);
     
         this.requestAnimFrame(tick);
       }, this);

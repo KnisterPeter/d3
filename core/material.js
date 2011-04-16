@@ -30,9 +30,9 @@ d3.Module('d3', function(m) {
       });
     },
     
-    apply: function(gl, config, mvMatrix, pMatrix) {
+    apply: function(gl, context, config, mvMatrix, pMatrix) {
       this.texture && this.texture.use(gl);
-      this.program.use(gl, config, mvMatrix, pMatrix);
+      this.program.use(gl, context, config, mvMatrix, pMatrix);
     }
   });
 });

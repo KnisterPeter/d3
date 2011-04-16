@@ -1,0 +1,25 @@
+{
+  "tex0": {
+    "ref": "../resources/crate.gif",
+    "filter-mag": "linear",
+    "filter-min": "linear-mipmap-linear"
+  },
+  "program": {
+    "attributes": {
+      "position": "aVertexPosition",
+      "normal": "aVertexNormal",
+      "tex0": "aTextureCoord"
+    },
+    "uniforms": {
+      "tex0": "uSampler",
+      "model-view": "uMVMatrix",
+      "normal": "uNMatrix",
+      "projection": "uPMatrix",
+      "ambient": "uAmbientColor",
+      "ligth0-direction": "uLightingDirection",
+      "light0-color": "uDirectionalColor"
+    },
+    "vertex": "../shader/pnt/pnt.vertex",
+    "fragment": "../shader/pnt/pnt.fragment"
+  }
+}
