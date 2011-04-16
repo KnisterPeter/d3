@@ -48,7 +48,8 @@ d3.Module('d3', function(m) {
       this.program.use(gl, context, config, mvMatrix, pMatrix);
     },
     
-    clear: function(gl, context) {
+    clear: function(gl, context, config) {
+      this.program.clear(gl, context, config);
       if (this.data.blend) {
         if (this.data.blend && this.data.blend.depth === false) {
           gl.enable(gl.DEPTH_TEST);

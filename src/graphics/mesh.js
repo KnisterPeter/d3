@@ -44,10 +44,12 @@ d3.Module('d3', function(m) {
     },
     
     render: function(gl, context, mvMatrix, pMatrix) {
+      var config = this.buffer.getConfig();
+      
       this.buffer.prepare(gl);
-      this.material.apply(gl, context, this.buffer.getConfig(), mvMatrix, pMatrix);
+      this.material.apply(gl, context, config, mvMatrix, pMatrix);
       this.buffer.render(gl);
-      this.material.clear(gl, context);
+      this.material.clear(gl, context, config);
     }
   });
 });

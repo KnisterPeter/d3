@@ -23,14 +23,14 @@ d3.Module('d3', function(m) {
           this.attributes = descr.attributes;
           for (var i in this.attributes) {
             this.attributes[i] = gl.getAttribLocation(this.program, this.attributes[i]);
-            gl.enableVertexAttribArray(this.attributes[i]);
           }
           
           this.uniforms = descr.uniforms;
           for (var i in this.uniforms) {
             this.uniforms[i] = gl.getUniformLocation(this.program, this.uniforms[i]);
           }
-
+          
+          d3.error();
           callback.call(context, this);
         });
       });
@@ -71,8 +71,10 @@ d3.Module('d3', function(m) {
     use: function(gl, context, config, mvMatrix, pMatrix) {
       gl.useProgram(this.program);
       d3.error();
+      
       for (var i in config.entries) {
         if (typeof(this.attributes[i]) != 'undefined') {
+          gl.enableVertexAttribArray(this.attributes[i]);
           gl.vertexAttribPointer(this.attributes[i], config.entries[i].size, 
               gl.FLOAT, false, config.offset, config.entries[i].offset);
           d3.error();
@@ -102,6 +104,15 @@ d3.Module('d3', function(m) {
       }
       gl.uniformMatrix4fv(this.uniforms['model-view'], false, mvMatrix);
       gl.uniformMatrix4fv(this.uniforms['projection'], false, pMatrix);
+    },
+    
+    clear: function(gl, context, config) {
+      for (var i in config.entries) {
+        if (typeof(this.attributes[i]) != 'undefined') {
+          gl.disableVertexAttribArray(this.attributes[i]);
+          d3.error();
+        }
+      }
     }
   });
 });

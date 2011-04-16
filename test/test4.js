@@ -34,6 +34,6 @@ new d3.Main(function(main, renderer) {
         }
         last = now;
       }, this);
-    });
-  });
+    }, this);
+  }, this);
 });
