@@ -1,0 +1,25 @@
+<html>
+<head>
+	<link rel="stylesheet" href="../resources/d3.css" type="text/css" />
+</head>
+<body>
+  <script type="text/javascript">
+    var __d3path = '../';
+  </script>
+  <script type="text/javascript" src="../d3.js"></script>
+  <script type="text/javascript">
+    if (window.location.search) {
+	    document.write('<script type="text/javascript" src="' 
+	        + window.location.search.substring(1) 
+	        + '"></s' + 'cript>');
+    } else {
+      var html = '<ul>'
+        + '<li><a href="?test1.js">Mesh Test</a></li>'
+        + '<li><a href="?test2.js">Scene Test</a></li>'
+        + '<li><a href="?test3.js">Texture Test</a></li>'
+        + '</ul>';
+      document.write(html);
+    }
+  </script>
+</body>
+</html>
