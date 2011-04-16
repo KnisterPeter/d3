@@ -1,4 +1,9 @@
 {
+  "blend": {
+    "func": ["SRC_ALPHA", "ONE"],
+    "depth": false,
+    "light": true
+  },
   "tex0": {
     "ref": "../resources/crate.gif",
     "filter-mag": "linear",
@@ -8,7 +13,6 @@
     "attributes": {
       "position": "aVertexPosition",
       "normal": "aVertexNormal",
-      "color": "aVertexColor",
       "tex0": "aTextureCoord"
     },
     "uniforms": {

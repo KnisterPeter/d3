@@ -1,6 +1,6 @@
 new d3.Main(function(main, renderer) {
   renderer.createMesh('../resources/mesh2.mesh', function(mesh) {
-    renderer.createMaterial('../shader/pnt/pnt2.material', function(mat) {
+    renderer.createMaterial('../shader/pnt/pnt.material', function(mat) {
       mesh.setMaterial(mat);
       
       var r1 = new d3.Renderable(mesh);

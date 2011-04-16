@@ -1,9 +1,4 @@
 {
-  "blend": {
-    "func": ["SRC_ALPHA", "ONE"],
-    "depth": false,
-    "light": true
-  },
   "tex0": {
     "ref": "../resources/crate.gif",
     "filter-mag": "linear",
@@ -13,6 +8,7 @@
     "attributes": {
       "position": "aVertexPosition",
       "normal": "aVertexNormal",
+      "color": "aVertexColor",
       "tex0": "aTextureCoord"
     },
     "uniforms": {
@@ -25,7 +21,7 @@
       "ligth0-direction": "uLightingDirection",
       "light0-color": "uDirectionalColor"
     },
-    "vertex": "../shader/pnt/pnt.vertex",
-    "fragment": "../shader/pnt/pnt.fragment"
+    "vertex": "../shader/pnct/pnct.vertex",
+    "fragment": "../shader/pnct/pnct.fragment"
   }
 }

@@ -52,5 +52,5 @@
       23, 20, 22
     ]
   },
-  "material-ref": "../shader/pnt/pnt.material"
+  "material-ref": "../shader/pnct/pnct.material"
 }
