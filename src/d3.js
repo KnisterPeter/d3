@@ -4,17 +4,17 @@ var files = [
   'core/main.js', 
   'core/typefactory.js', 
   'core/node.js', 
-  'core/renderable.js',
   'core/resource.js', 
-  'core/material.js', 
-  'core/light.js', 
-  'core/mesh.js', 
   'core/scene.js', 
   'core/input.js', 
-  'webgl/buffer.js', 
-  'webgl/renderer.js', 
-  'webgl/program.js', 
-  'webgl/texture.js'
+  'graphics/renderable.js',
+  'graphics/material.js', 
+  'graphics/light.js', 
+  'graphics/mesh.js', 
+  'graphics/buffer.js', 
+  'graphics/renderer.js', 
+  'graphics/program.js', 
+  'graphics/texture.js'
 ];
 var html = [];
 for (var idx in files) {
