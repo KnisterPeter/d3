@@ -35,10 +35,19 @@ d3.Module('d3', function(m) {
       }, this);
     },
     
+    getMaterial: function() {
+      return this.material;
+    },
+    
+    setMaterial: function(material) {
+      this.material = material;
+    },
+    
     render: function(gl, context, mvMatrix, pMatrix) {
       this.buffer.prepare(gl);
       this.material.apply(gl, context, this.buffer.getConfig(), mvMatrix, pMatrix);
       this.buffer.render(gl);
+      this.material.clear(gl, context);
     }
   });
 });

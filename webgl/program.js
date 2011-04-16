@@ -79,6 +79,7 @@ d3.Module('d3', function(m) {
       
       this.uniforms['tex0'] && gl.uniform1i(this.uniforms['tex0'], 0);
       if (context.lights && context.lights.length > 0) {
+        this.uniforms['lighting'] && gl.uniform1i(this.uniforms['lighting'], 1);
         for (var idx in context.lights) {
           var light = context.lights[idx];
           if (light.getDirection() != null) {
@@ -94,6 +95,8 @@ d3.Module('d3', function(m) {
             this.uniforms['ambient'] && gl.uniform3fv(this.uniforms['ambient'], light.getColor());
           }
         }
+      } else {
+        this.uniforms['lighting'] && gl.uniform1i(this.uniforms['lighting'], 0);
       }
       gl.uniformMatrix4fv(this.uniforms['model-view'], false, mvMatrix);
       gl.uniformMatrix4fv(this.uniforms['projection'], false, pMatrix);

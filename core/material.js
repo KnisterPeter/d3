@@ -31,8 +31,31 @@ d3.Module('d3', function(m) {
     },
     
     apply: function(gl, context, config, mvMatrix, pMatrix) {
+      if (this.data.blend) {
+        if (this.data.blend.depth === false) {
+          gl.disable(gl.DEPTH_TEST);
+        }
+        if (this.data.blend.func) {
+          gl.enable(gl.BLEND);
+          gl.blendFunc(gl[this.data.blend.func[0]], gl[this.data.blend.func[1]]);
+        }
+        if (this.data.blend.light === false) {
+          delete context.lights;
+        }
+      }
       this.texture && this.texture.use(gl);
       this.program.use(gl, context, config, mvMatrix, pMatrix);
+    },
+    
+    clear: function(gl, context) {
+      if (this.data.blend) {
+        if (this.data.blend && this.data.blend.depth === false) {
+          gl.enable(gl.DEPTH_TEST);
+        }
+        if (this.data.blend.func) {
+          gl.disable(gl.BLEND);
+        }
+      }
     }
   });
 });

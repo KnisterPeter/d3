@@ -1,4 +1,9 @@
 {
+  "blend": {
+    "func": ["SRC_ALPHA", "ONE"],
+    "depth": false,
+    "light": true
+  },
   "tex0": {
     "ref": "../resources/crate.gif",
     "filter-mag": "linear",
