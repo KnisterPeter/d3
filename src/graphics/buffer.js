@@ -56,10 +56,12 @@ d3.Module('d3', function(m) {
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices);
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indices);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.data.indices), gl.STATIC_DRAW);
+      d3.error();
     },
     
     render: function(gl) {
       gl.drawElements(gl.TRIANGLES, this.config.items, gl.UNSIGNED_SHORT, 0);
+      d3.error();
     }
   });
 });

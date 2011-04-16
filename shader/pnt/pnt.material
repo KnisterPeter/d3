@@ -16,14 +16,14 @@
       "tex0": "aTextureCoord"
     },
     "uniforms": {
-      "tex0": "uSampler",
       "model-view": "uMVMatrix",
       "normal": "uNMatrix",
       "projection": "uPMatrix",
-      "lighting": "uLightEnabled",
       "ambient": "uAmbientColor",
       "ligth0-direction": "uLightingDirection",
-      "light0-color": "uDirectionalColor"
+      "light0-color": "uDirectionalColor",
+      "lighting": "uLightEnabled",
+      "tex0": "uSampler"
     },
     "vertex": "../shader/pnt/pnt.vertex",
     "fragment": "../shader/pnt/pnt.fragment"

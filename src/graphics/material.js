@@ -38,6 +38,7 @@ d3.Module('d3', function(m) {
         if (this.data.blend.func) {
           gl.enable(gl.BLEND);
           gl.blendFunc(gl[this.data.blend.func[0]], gl[this.data.blend.func[1]]);
+          d3.error();
         }
         if (this.data.blend.light === false) {
           delete context.lights;

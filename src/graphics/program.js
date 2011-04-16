@@ -53,7 +53,7 @@ d3.Module('d3', function(m) {
       gl.attachShader(this.program, fShader);
       gl.linkProgram(this.program);
       if (!gl.getProgramParameter(this.program, gl.LINK_STATUS)) {
-        throw new Error(gl.getProgramInfoLog(this.program));
+        throw new Error('Linking of shader failed');
       }
     },
     
@@ -70,10 +70,12 @@ d3.Module('d3', function(m) {
 
     use: function(gl, context, config, mvMatrix, pMatrix) {
       gl.useProgram(this.program);
+      d3.error();
       for (var i in config.entries) {
         if (typeof(this.attributes[i]) != 'undefined') {
           gl.vertexAttribPointer(this.attributes[i], config.entries[i].size, 
               gl.FLOAT, false, config.offset, config.entries[i].offset);
+          d3.error();
         }
       }
       

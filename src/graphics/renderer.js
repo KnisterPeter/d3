@@ -17,11 +17,11 @@ d3.Module('d3', function(m) {
       if (!this.gl) {
         throw new Error('Failed to initialize WebGL');
       }
+      d3.error = d3.bind(this.checkError, this);
       
       this.root = new d3.Node();
       this.updateViewport();
       
-      this.gl.enable(this.gl.TEXTURE_2D);
       this.gl.clearColor(0, 0, 0, 1);
       this.gl.clearDepth(1);
       this.gl.enable(this.gl.DEPTH_TEST);
@@ -89,6 +89,31 @@ d3.Module('d3', function(m) {
         || window.webkitRequestAnimationFrame
         || window.mozRequestAnimationFrame)
           (callback);
+    },
+    
+    checkError: function(text) {
+      var error = this.gl.getError();
+      if (error != this.gl.NO_ERROR) {
+        var name = error;
+        switch (error) {
+          case this.gl.INVALID_ENUM:
+            name = 'INVALID_ENUM';
+            break;
+          case this.gl.INVALID_VALUE:
+            name = 'INVALID_VALUE';
+            break;
+          case this.gl.INVALID_OPERATION:
+            name = 'INVALID_OPERATION';
+            break;
+          case this.gl.INVALID_FRAMEBUFFER_OPERATION:
+            name = 'INVALID_FRAMEBUFFER_OPERATION';
+            break;
+          case this.gl.OUT_OF_MEMORY:
+            name = 'OUT_OF_MEMORY';
+            break;
+        }
+        throw new Error('GL error ' + name + ': ' + text);
+      }
     }
   });
 });
