@@ -22,12 +22,33 @@ d3.Module('d3', function(m) {
         if (this.data['tex0']) {
           this.texture = new d3.Texture(gl, this.data.tex0);
         }
-        if (this.data['program-ref']) {
-          (new d3.Program(this.data['program-ref'])).create(gl, onReady, this);
-        } else if (this.data['program']) {
-          (new d3.Program(this.data['program'])).create(gl, onReady, this);
-        }
+        this._loadProgram(gl, onReady);
       });
+    },
+    
+    _loadProgram: function(gl, onReady) {
+      if (this.data['program-ref']) {
+        (new d3.Program(this.data['program-ref'])).create(gl, onReady, this);
+      } else if (this.data['program']) {
+        (new d3.Program(this.data['program'])).create(gl, onReady, this);
+      } else {
+        if (d3.Program.DEFAULT != null) {
+          onReady.call(this, d3.Program.DEFAULT);
+        } else {
+          (new d3.Program(d3.Program.DEFAULT_DESCR)).create(gl, function(program) {
+            d3.Program.DEFAULT = program;
+            onReady.call(this, program);
+          }, this);
+        }
+      }
+    },
+    
+    getTexture: function() {
+      return this.texture;
+    },
+    
+    setTexture: function(texture) {
+      this.texture = texture;
     },
     
     apply: function(gl, context, config, mvMatrix, pMatrix) {
@@ -44,6 +65,7 @@ d3.Module('d3', function(m) {
           delete context.lights;
         }
       }
+      context.texturing = this.texture != null;
       this.texture && this.texture.use(gl);
       this.program.use(gl, context, config, mvMatrix, pMatrix);
     },

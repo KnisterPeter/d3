@@ -4,10 +4,10 @@ d3.Module('d3', function(m) {
   m.Class('Light', {
     color: null,
     direction: null,
+    position: null,
     
-    construct: function(color, direction) {
+    construct: function(color) {
       this.setColor(color);
-      direction && this.setDirection(direction);
     },
     
     getColor: function() {
@@ -26,6 +26,14 @@ d3.Module('d3', function(m) {
       this.direction = Vector3.create(direction);
       Vector3.normalize(this.direction);
       Vector3.scale(this.direction, -1);
+    },
+    
+    getPosition: function() {
+      return this.position;
+    },
+    
+    setPosition: function(position) {
+      this.position = Vector3.create(position);
     }
   });
 });

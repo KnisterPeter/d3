@@ -24,10 +24,11 @@ d3.Module('d3', function(m) {
       data = JSON.parse(data);
       this.buffer = new d3.Buffer(gl, data.buffer.type, data.buffer);
       
+      var matDescr = {};
       if (data['material-ref']) {
-        var matDescr = data['material-ref'];
+        matDescr = data['material-ref'];
       } else if (data['material']) {
-        var matDescr = data['material'];
+        matDescr = data['material'];
       }
       (new d3.Material(matDescr)).create(gl, function(material) {
         this.material = material;

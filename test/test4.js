@@ -1,6 +1,6 @@
 new d3.Main(function(main, renderer) {
   renderer.createMesh('../resources/mesh2.mesh', function(mesh) {
-    renderer.createMaterial('../shader/pnt/pnt.material', function(mat) {
+    renderer.createMaterial('../resources/transparent.material', function(mat) {
       mesh.setMaterial(mat);
       
       var r1 = new d3.Renderable(mesh);
@@ -8,7 +8,9 @@ new d3.Main(function(main, renderer) {
       // Ambient Light
       r1.addLight(new d3.Light([0.5, 0.6, 0.8]));
       // Directional Light
-      r1.addLight(new d3.Light([0.2, 1, 0.2], [-1, -1, 1]));
+      var directional = new d3.Light([0.2, 1, 0.2]);
+      directional.setDirection([-1, -1, -1]);
+      r1.addLight(directional);
       renderer.getRoot().addChild(r1);
       
       var last = 0;

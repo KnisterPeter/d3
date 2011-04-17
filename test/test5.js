@@ -2,13 +2,13 @@ new d3.Main(function(main, renderer) {
   renderer.createMesh('../resources/mesh2.mesh', function(mesh) {
     
     var r1 = new d3.Renderable(mesh);
-    r1.setPosition([0, 0.0, -5.0]);
+    r1.setPosition([0, 0, -10]);
     // Ambient Light
-    r1.addLight(new d3.Light([0.5, 0.6, 0.8]));
-    // Directional Light
-    var directional = new d3.Light([0.2, 1, 0.2]);
-    directional.setDirection([-1, -1, -1]);
-    r1.addLight(directional);
+    r1.addLight(new d3.Light([0.2, 0.2, 0.2]));
+    // Point Light
+    var point = new d3.Light([0.4, 0.4, 1]);
+    point.setPosition([-5, 0, -5]);
+    r1.addLight(point);
     renderer.getRoot().addChild(r1);
     
     var last = 0;
