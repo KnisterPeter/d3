@@ -7,15 +7,14 @@ d3.Module('d3', function(m) {
     position: null,
     rotation: null,
     scale: null,
+    parent: null,
     children: null,
-    lights: null,
     
     construct: function() {
       this.position = Vector3.create();
       this.rotation = Vector3.create();
       this.scale = Vector3.create([1, 1, 1]);
       this.children = [];
-      this.lights = [];
     },
     
     setPosition: function(vec) {
@@ -42,17 +41,22 @@ d3.Module('d3', function(m) {
       Vector3.set(vec, this.scale);
     },
     
+    getParent: function() {
+      return this.parent;
+    },
+    
+    setParent: function(parent) {
+      this.parent = parent;
+    },
+    
+    getChildren: function() {
+      return this.children;
+    },
+    
     addChild: function(child) {
       d3.assert(child instanceof d3.Node, 'Only d3.Node could be child');
+      child.setParent(this);
       this.children.push(child);
-    },
-    
-    getLights: function() {
-      return this.lights;
-    },
-    
-    addLight: function(light) {
-      this.lights.push(light);
     },
     
     render: function(gl, context, mvMatrix, pMatrix) {
@@ -60,8 +64,6 @@ d3.Module('d3', function(m) {
       var q = Quaternion4.rotateByAngles(this.rotation[0], this.rotation[1], this.rotation[2]);
       Matrix4.multiply(mvMatrix, Quaternion4.toMat4(q));
       Matrix4.scale(mvMatrix, this.scale);
-      
-      context.lights = this.lights;
       
       this.children.forEach(function(child) {
         child.render(gl, d3.clone(context), Matrix4.create(mvMatrix), pMatrix);

@@ -39,6 +39,7 @@ d3.Module('d3', function(m) {
     return function() { func.apply(context, arguments); };
   };
   m.clone = function(o) { c = {}; for (var p in o) { c[p] = o[p]; } return c; };
-  m.isString = function(o) { return typeof(o) == 'string'; };
-  m.isFunction = function(f) { return typeof(f) == 'function'; };
+  m.isString = function(o) { return typeof(o) === 'string'; };
+  m.isFunction = function(f) { return typeof(f) === 'function'; };
+  m.isUndefined = function(o) { return typeof(o) === 'undefined'; };
 });

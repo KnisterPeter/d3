@@ -1,18 +1,21 @@
 new d3.Main(function(main, renderer) {
   renderer.createMesh('../resources/mesh2.mesh', function(mesh) {
-    
-    var r1 = new d3.Renderable(mesh);
-    r1.setPosition([0, 0, -10]);
+
     // Ambient Light
-    r1.addLight(new d3.Light([0.2, 0.2, 0.2]));
+    renderer.getRoot().addLight(new d3.Light([0.2, 0.2, 0.2]));
+    
     // Point Light 1
     var point = new d3.Light([1, 1, 0]);
-    point.setPosition([-5, 0, -5]);
-    r1.addLight(point);
+    point.setPosition([-5, 0, 0]);
+    renderer.getRoot().addLight(point);
+
     // Point Light 2
     var point = new d3.Light([0, 0, 1]);
     point.setPosition([5, 0, -5]);
-    r1.addLight(point);
+    renderer.getRoot().addLight(point);
+    
+    var r1 = new d3.Renderable(mesh);
+    r1.setPosition([0, 0, -10]);
     renderer.getRoot().addChild(r1);
     
     var last = 0;
