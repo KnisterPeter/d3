@@ -60,6 +60,9 @@ class WebGLRenderer
     if opts.tex0
       vShader = "#define tex0\n" + vShader
       fShader = "#define tex0\n" + fShader
+    if opts.lighting
+      vShader = "#define lighting\n" + vShader
+      fShader = "#define lighting\n" + fShader
     program = @gl.createProgram()
     @gl.attachShader(program, this.getShader(@gl.VERTEX_SHADER, vShader))
     @gl.attachShader(program, this.getShader(@gl.FRAGMENT_SHADER, fShader))
@@ -79,6 +82,13 @@ class WebGLRenderer
       program["aTextureCoord0"] = @gl.getAttribLocation(program, "aTextureCoord0")
       @gl.enableVertexAttribArray(program["aTextureCoord0"])
       program.tex0 = @gl.getUniformLocation(program, "uSamplerTex0")
+    if opts.lighting
+      program["aVertexNormal"] = @gl.getAttribLocation(program, "aVertexNormal")
+      @gl.enableVertexAttribArray(program["aVertexNormal"])
+      program["uAmbientColor"] = @gl.getUniformLocation(program, "uAmbientColor")
+      program["uLightingDirection"] = @gl.getUniformLocation(program, "uLightingDirection")
+      program["uDirectionalColor"] = @gl.getUniformLocation(program, "uDirectionalColor")
+      program["uNMatrix"] = @gl.getUniformLocation(program, "uNMatrix")
 
     program.perspectiveMatrix = @gl.getUniformLocation(program, "uPMatrix")
     program.modelViewMatrix = @gl.getUniformLocation(program, "uMVMatrix")
@@ -134,6 +144,13 @@ class WebGLRenderer
       @gl.activeTexture(@gl.TEXTURE0)
       @gl.bindTexture(@gl.TEXTURE_2D, texture)
       @gl.uniform1i(program.tex0, 0)
+    if program.opts.lighting
+      @gl.vertexAttribPointer(program["aVertexNormal"], 3, @gl.FLOAT, false, buffer.stride, buffer['vn'])
+      # TODO: move to scene definition
+      @gl.uniform3f(program["uAmbientColor"], 0.3, 0.1, 0.1)
+      @gl.uniform3f(program["uLightingDirection"], 1, 0, 0)
+      @gl.uniform3f(program["uDirectionalColor"], 0, 1, 1)
+      @gl.uniformMatrix3fv(program["uNMatrix"], false, mvMatrix.dup().inverse().transpose().mat3())
 
     @gl.uniformMatrix4fv(program.perspectiveMatrix, false, @perspectiveMatrix.elements)
     @gl.uniformMatrix4fv(program.modelViewMatrix, false, mvMatrix.elements)
@@ -143,6 +160,16 @@ class WebGLRenderer
 class WebGLProgram
   @DEFAULT_VERTEX: """
     attribute vec3 aVertexPosition;
+
+#ifdef lighting
+    attribute vec3 aVertexNormal;
+    uniform vec3 uAmbientColor;
+    uniform vec3 uLightingDirection;
+    uniform vec3 uDirectionalColor;
+    uniform mat3 uNMatrix;
+    varying vec3 vLightWeighting;
+#endif
+
 #ifdef color
     attribute vec4 aVertexColor;
     varying vec4 vColor;
@@ -164,10 +191,19 @@ class WebGLProgram
 #ifdef tex0
       vTextureCoord = aTextureCoord0;
 #endif
+#ifdef lighting
+      vec3 transformedNormal = uNMatrix * aVertexNormal;
+      float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+      vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+#endif
     }
   """
   @DEFAULT_FRAGMENT: """
     precision mediump float;
+
+#ifdef lighting
+    varying vec3 vLightWeighting;
+#endif
 
 #ifdef color
     varying vec4 vColor;
@@ -186,6 +222,9 @@ class WebGLProgram
 #endif
 #ifdef tex0
       gl_FragColor = gl_FragColor * texture2D(uSamplerTex0, vec2(vTextureCoord.s, vTextureCoord.t));
+#endif
+#ifdef lighting
+      gl_FragColor = vec4(gl_FragColor.rgb * vLightWeighting, gl_FragColor.a);
 #endif
     }
   """

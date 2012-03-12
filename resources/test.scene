@@ -92,6 +92,7 @@
           23, 20, 22
         ]
       },
+      "lighting": true,
       "textures": [
         {"name": "../resources/crate.gif", "filter": "mipmap"}
       ]

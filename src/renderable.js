@@ -19,6 +19,7 @@ class MeshParser
     opts = {}
     opts.color = true if 'vc' in data?.buffer?.type
     opts.tex0 = true if data?.textures?[0] and 't0' in data?.buffer?.type
+    opts.lighting = true if data?.lighting and 'vn' in data?.buffer?.type
 
     if data.program
       [library, name] = data.program.split(':')

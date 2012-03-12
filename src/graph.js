@@ -31,8 +31,7 @@ class Node
       @orientation.set(d3.Math.Quaternion.fromAngles(q[0], q[1], q[2]))
   setScale: (v) -> @scale.setElements(v)
 
-  move: (vector) -> 
-    @position.add(@orientation.multiply(new d3.Math.Vector(vector)))
+  move: (vector) -> @position.add(@orientation.multiply(new d3.Math.Vector(vector)))
   pitch: (angle) -> @orientation = @orientation.multiply(d3.Math.Quaternion.fromAxis(angle, [1, 0, 0]))
   yaw:  (angle) -> @orientation = @orientation.multiply(d3.Math.Quaternion.fromAxis(angle, [0, 1, 0]))
   roll: (angle) -> @orientation = @orientation.multiply(d3.Math.Quaternion.fromAxis(angle, [0, 0, 1]))

@@ -21,6 +21,11 @@
 	matrix.prototype.e = function(i,j) {
 		return this.elements[((i-1)*4)+(j-1)];
 	};
+
+	matrix.prototype.mat3 = function() {
+		var e = this.elements;
+		return [e[0], e[1], e[2], e[4], e[5], e[6], e[8], e[9], e[10]];
+	};
 	
 	matrix.prototype.row = function(i){
 		var e = this.elements;
