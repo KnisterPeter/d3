@@ -20,6 +20,7 @@
   <script type="text/coffeescript" src="../src/input.js"></script>
   <script type="text/coffeescript" src="../src/math.js"></script>
   <script type="text/coffeescript" src="../src/graph.js"></script>
+  <script type="text/coffeescript" src="../src/light.js"></script>
   <script type="text/coffeescript" src="../src/renderable.js"></script>
   <script type="text/coffeescript" src="../src/webgl.js"></script>
   <script type="text/coffeescript">
@@ -47,7 +48,7 @@
         fov: 45
       )
     input = new d3.Input(preventDefault: false)
-    core.load '../resources/test.scene', (library) ->
+    core.load '../resources/test.library', (library) ->
       root = library.getNode('root')
       quad = library.getNode('child')
       dice = library.getNode('dice')

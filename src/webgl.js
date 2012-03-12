@@ -128,6 +128,9 @@ class WebGLRenderer
     return buffer
 
   render: (node) ->
+    @ambient = new d3.AmbientLight([0.2, 0.2, 0.2])
+    @directional = new d3.DirectionalLight([0, 1, 1], [1, 0, 0])
+
     @gl.clear(@gl.COLOR_BUFFER_BIT | @gl.DEPTH_BUFFER_BIT)
     node?.render(this, new d3.Math.Matrix())
 
@@ -146,10 +149,9 @@ class WebGLRenderer
       @gl.uniform1i(program.tex0, 0)
     if program.opts.lighting
       @gl.vertexAttribPointer(program["aVertexNormal"], 3, @gl.FLOAT, false, buffer.stride, buffer['vn'])
-      # TODO: move to scene definition
-      @gl.uniform3f(program["uAmbientColor"], 0.3, 0.1, 0.1)
-      @gl.uniform3f(program["uLightingDirection"], 1, 0, 0)
-      @gl.uniform3f(program["uDirectionalColor"], 0, 1, 1)
+      @gl.uniform3fv(program["uAmbientColor"], @ambient.getColor())
+      @gl.uniform3fv(program["uLightingDirection"], @directional.getDirection())
+      @gl.uniform3fv(program["uDirectionalColor"], @directional.getColor())
       @gl.uniformMatrix3fv(program["uNMatrix"], false, mvMatrix.dup().inverse().transpose().mat3())
 
     @gl.uniformMatrix4fv(program.perspectiveMatrix, false, @perspectiveMatrix.elements)

@@ -768,6 +768,14 @@
 		
 		return this;
 	}
+
+  vector.prototype.scale = function(f) {
+    var a = this.elements;
+    a[0] *= f;
+    a[1] *= f;
+    a[2] *= f;
+    return this;
+  }
 	
 	vector.set = function() {
 		var elements = arguments[2] ? [arguments[0],arguments[1],arguments[2]] : arguments[0];

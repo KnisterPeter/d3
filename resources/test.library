@@ -128,29 +128,7 @@
     },
     {
       "type": "d3.Node",
-      "name": "root2",
-      "position": [0, 0, -7],
-      "children": [
-        {
-          "type": "d3.Node",
-          "position": [-2, 0, 0],
-          "orientation": [0, 0, 45],
-          "renderable": "test:mesh1"
-        },
-        {
-          "type": "d3.Node",
-          "position": [2, 0, -3],
-          "orientation": [0, 45, 0],
-          "scale": [1.25, 1.25, 1.25],
-          "renderable": "test:mesh1"
-        }
-      ]
-    },
-    {
-      "type": "d3.Node",
-      "name": "root3",
-      "position": [0, 0, -12],
-      "renderable": "test:mesh2"
+      "name": "root2"
     }
   ]
 }
