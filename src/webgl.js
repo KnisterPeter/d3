@@ -127,14 +127,19 @@ class WebGLRenderer
 
     return buffer
 
-  render: (node) ->
-    @ambient = new d3.AmbientLight([0.2, 0.2, 0.2])
-    @directional = new d3.DirectionalLight([0, 1, 1], [1, 0, 0])
-
+  render: (context, node) ->
     @gl.clear(@gl.COLOR_BUFFER_BIT | @gl.DEPTH_BUFFER_BIT)
-    node?.render(this, new d3.Math.Matrix())
+    node?.render(context, this, new d3.Math.Matrix())
 
-  draw: (mvMatrix, buffer, texture, program) ->
+  draw: (context, mvMatrix, buffer, texture, program, material) ->
+    if material?.blending
+      @gl.enable(@gl.BLEND)
+      @gl.disable(@gl.DEPTH_TEST)
+      @gl.blendFunc(@gl[material.blending[0].toUpperCase()], @gl[material.blending[1].toUpperCase()])
+    else
+      @gl.enable(@gl.DEPTH_TEST)
+      @gl.disable(@gl.BLEND)
+
     @gl.useProgram(program)
     @gl.bindBuffer(@gl.ARRAY_BUFFER, buffer)
     @gl.bindBuffer(@gl.ELEMENT_ARRAY_BUFFER, buffer.indices)
@@ -149,9 +154,9 @@ class WebGLRenderer
       @gl.uniform1i(program.tex0, 0)
     if program.opts.lighting
       @gl.vertexAttribPointer(program["aVertexNormal"], 3, @gl.FLOAT, false, buffer.stride, buffer['vn'])
-      @gl.uniform3fv(program["uAmbientColor"], @ambient.getColor())
-      @gl.uniform3fv(program["uLightingDirection"], @directional.getDirection())
-      @gl.uniform3fv(program["uDirectionalColor"], @directional.getColor())
+      @gl.uniform3fv(program["uAmbientColor"], context.get('ambient').getColor())
+      @gl.uniform3fv(program["uLightingDirection"], context.get('directional').getDirection())
+      @gl.uniform3fv(program["uDirectionalColor"], context.get('directional').getColor())
       @gl.uniformMatrix3fv(program["uNMatrix"], false, mvMatrix.dup().inverse().transpose().mat3())
 
     @gl.uniformMatrix4fv(program.perspectiveMatrix, false, @perspectiveMatrix.elements)

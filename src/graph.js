@@ -1,13 +1,15 @@
 class Node
   constructor: (@name) ->
-    @parent = null
-    @children = []
     @position = new d3.Math.Vector()
     @orientation = new d3.Math.Quaternion()
     @scale = new d3.Math.Vector([1, 1, 1])
+    @parent = null
+    @children = []
+    @lights = []
 
   getName: -> @name
   setRenderable: (@renderable) ->
+  getRenderable: -> @renderable
   setParent: (node) -> @parent = node
 
   addChild: (node) ->
@@ -20,6 +22,8 @@ class Node
       result = child.getChild(name)
       return result if result
     return null
+
+  addLight: (light) -> @lights.push(light)
 
   setPosition: (v) -> @position.setElements(v)
   setOrientation: (q) -> 
@@ -36,12 +40,19 @@ class Node
   yaw:  (angle) -> @orientation = @orientation.multiply(d3.Math.Quaternion.fromAxis(angle, [0, 1, 0]))
   roll: (angle) -> @orientation = @orientation.multiply(d3.Math.Quaternion.fromAxis(angle, [0, 0, 1]))
 
-  render: (renderer, mvMatrix) ->
+  render: (context, renderer, mvMatrix) ->
+    context.push()
+    for light in @lights
+      if light instanceof d3.DirectionalLight
+        context.set('directional', light)
+      else
+        context.set('ambient', light)
     mvMatrix = mvMatrix.dup()
     mvMatrix.multiply(d3.Math.Matrix.make(@orientation, @position, @scale))
-    @renderable.render(renderer, mvMatrix) if @renderable
+    @renderable.render(context, renderer, mvMatrix) if @renderable
     for child in @children
-      child.render(renderer, mvMatrix)
+      child.render(context, renderer, mvMatrix)
+    context.pop()
 
 class NodeParser
   constructor: (@factory) ->
@@ -53,6 +64,7 @@ class NodeParser
     node.setOrientation(data.orientation) if data.orientation
     node.setScale(data.scale) if data.scale
     node.addChild(@factory.parse(core, child)) for child in data.children if data.children
+    node.addLight(@factory.parse(core, light)) for light in data.lights if data.lights
     if data.renderable
       renderable = data.renderable
       if d3.Core.isString(renderable)

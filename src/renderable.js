@@ -4,7 +4,8 @@ class Mesh
   setVertices: (@vertices) ->
   setProgram: (@program) ->
   setTexture: (@texture) ->
-  render: (renderer, mvMatrix) -> renderer.draw(mvMatrix, @vertices, @texture, @program)
+  setMaterial: (@material) ->
+  render: (context, renderer, mvMatrix) -> renderer.draw(context, mvMatrix, @vertices, @texture, @program, @material)
 
 class MeshParser
   constructor: (@factory) ->
@@ -14,12 +15,13 @@ class MeshParser
     mesh = new Mesh(data.name)
     mesh.setVertices(core.getRenderer().createBuffer(data.buffer))
     # TODO: Enable multi texture
-    mesh.setTexture(core.getRenderer().createTexture(data.textures[0])) if data?.textures?[0]
+    mesh.setTexture(core.getRenderer().createTexture(data.material.textures[0])) if data?.material?.textures?[0]
+    mesh.setMaterial(data.material) if data?.material
 
     opts = {}
     opts.color = true if 'vc' in data?.buffer?.type
-    opts.tex0 = true if data?.textures?[0] and 't0' in data?.buffer?.type
-    opts.lighting = true if data?.lighting and 'vn' in data?.buffer?.type
+    opts.tex0 = true if data?.material?.textures?[0] and 't0' in data?.buffer?.type
+    opts.lighting = true if data?.material?.lighting and 'vn' in data?.buffer?.type
 
     if data.program
       [library, name] = data.program.split(':')

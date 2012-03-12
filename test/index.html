@@ -40,6 +40,7 @@
     root = null
     quad = null
     dice = null
+    dice2 = null
 
     core = new d3.Core('canvas', 
       fullscreen: true
@@ -52,6 +53,7 @@
       root = library.getNode('root')
       quad = library.getNode('child')
       dice = library.getNode('dice')
+      dice2 = library.getNode('dice2')
       core.getRoot().addChild(root)
     fps = new FPS('fps')
     last = new Date().getTime()
@@ -76,6 +78,9 @@
       if dice
         dice.pitch(-3 * diff)
         dice.yaw(5 * diff)
+      if dice2
+        dice2.pitch(3 * diff)
+        dice2.yaw(-5 * diff)
       quad.roll(4 * diff) if quad 
       last = timestamp
   </script>

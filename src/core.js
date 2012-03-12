@@ -32,13 +32,30 @@ class Core
   addLibrary: (name, library) -> @libraries[name] = library
   getLibrary: (name) -> @libraries[name]
   load: (path, callback) -> @parserFactory.load(this, path, callback)
-  render: -> @renderer.render(@root)
+  render: -> 
+    @renderer.render(new RenderContext(), @root)
 
   run: (callback) ->
     main = (timestamp) ->
       callback(timestamp)
       requestAnimationFrame(main)
     requestAnimationFrame(main)
+
+class RenderContext
+  constructor: ->
+    @attributes = {}
+    @stack = []
+  push: -> 
+    state = {}
+    for k, v of @attributes
+      state[k] = v
+    @stack.push(state)
+  pop: -> 
+    state = @stack.pop()
+    for k, v of state
+      @attributes[k] = v
+  get: (name) -> @attributes[name]
+  set: (name, value) -> @attributes[name] = value
 
 class ParserFactory
   constructor: ->
