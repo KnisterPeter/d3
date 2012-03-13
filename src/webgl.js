@@ -89,6 +89,10 @@ class WebGLRenderer
       program["uLightingDirection"] = @gl.getUniformLocation(program, "uLightingDirection")
       program["uDirectionalColor"] = @gl.getUniformLocation(program, "uDirectionalColor")
       program["uNMatrix"] = @gl.getUniformLocation(program, "uNMatrix")
+      for n in [0..WebGLProgram.MAX_LIGHT]
+        program["uLight[" + n + "].enabled"] = @gl.getUniformLocation(program, "uLight[" + n + "].enabled")
+        program["uLight[" + n + "].pos"] = @gl.getUniformLocation(program, "uLight[" + n + "].pos")
+        program["uLight[" + n + "].col"] = @gl.getUniformLocation(program, "uLight[" + n + "].col")
 
     program.perspectiveMatrix = @gl.getUniformLocation(program, "uPMatrix")
     program.modelViewMatrix = @gl.getUniformLocation(program, "uMVMatrix")
@@ -132,6 +136,7 @@ class WebGLRenderer
     node?.render(context, this, new d3.Math.Matrix())
 
   draw: (context, mvMatrix, buffer, texture, program, material) ->
+    # TODO: Implement proper depth sorted transparency rendering
     if material?.blending
       @gl.enable(@gl.BLEND)
       @gl.disable(@gl.DEPTH_TEST)
@@ -158,6 +163,14 @@ class WebGLRenderer
       @gl.uniform3fv(program["uLightingDirection"], context.get('directional').getDirection())
       @gl.uniform3fv(program["uDirectionalColor"], context.get('directional').getColor())
       @gl.uniformMatrix3fv(program["uNMatrix"], false, mvMatrix.dup().inverse().transpose().mat3())
+      for n in [0..WebGLProgram.MAX_LIGHT]
+        pointLight = context.get('point')[n]
+        if pointLight
+          @gl.uniform1i(program["uLight[" + n + "].enabled"], true)
+          @gl.uniform3fv(program["uLight[" + n + "].pos"], pointLight.getPosition())
+          @gl.uniform3fv(program["uLight[" + n + "].col"], pointLight.getColor())
+        else
+          @gl.uniform1i(program["uLight[" + n + "].enabled"], false)
 
     @gl.uniformMatrix4fv(program.perspectiveMatrix, false, @perspectiveMatrix.elements)
     @gl.uniformMatrix4fv(program.modelViewMatrix, false, mvMatrix.elements)
@@ -165,16 +178,24 @@ class WebGLRenderer
     @gl.drawElements(@gl.TRIANGLES, buffer.items, @gl.UNSIGNED_SHORT, 0)
 
 class WebGLProgram
+  @MAX_LIGHT: 8
   @DEFAULT_VERTEX: """
     attribute vec3 aVertexPosition;
 
 #ifdef lighting
+#define NUM_LIGHTS #{this.MAX_LIGHT}
     attribute vec3 aVertexNormal;
     uniform vec3 uAmbientColor;
     uniform vec3 uLightingDirection;
     uniform vec3 uDirectionalColor;
     uniform mat3 uNMatrix;
     varying vec3 vLightWeighting;
+    struct point_light {
+      bool enabled;
+      vec3 pos;
+      vec3 col;
+    };
+    uniform point_light uLight[NUM_LIGHTS];
 #endif
 
 #ifdef color
@@ -191,7 +212,8 @@ class WebGLProgram
     uniform mat4 uPMatrix;
 
     void main(void) {
-      gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+      vec4 mvPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
+      gl_Position = uPMatrix * mvPosition;
 #ifdef color
       vColor = aVertexColor;
 #endif
@@ -200,8 +222,14 @@ class WebGLProgram
 #endif
 #ifdef lighting
       vec3 transformedNormal = uNMatrix * aVertexNormal;
-      float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
-      vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+      float weight = max(dot(transformedNormal, uLightingDirection), 0.0);
+      vLightWeighting = uAmbientColor + uDirectionalColor * weight;
+
+      if (uLight[0].enabled) {
+        vec3 direction = normalize(uLight[0].pos - mvPosition.xyz);
+        weight = max(dot(transformedNormal, direction), 0.0);
+        vLightWeighting += uLight[0].col * weight;
+      }
 #endif
     }
   """

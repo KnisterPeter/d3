@@ -11,6 +11,12 @@ class DirectionalLight extends AmbientLight
 
   getDirection: -> @direction
 
+class PointLight extends AmbientLight
+  constructor: (color, @position) ->
+    super(color)
+
+  getPosition: -> @position
+
 class LightParser
   constructor: (@factory) ->
 
@@ -21,8 +27,11 @@ class LightParser
         new AmbientLight(data.color)
       when 'directional' 
         new DirectionalLight(data.color, data.direction)
+      when 'point' 
+        new PointLight(data.color, data.position)
 
 (this.d3 || this.d3 = {}).AmbientLight = AmbientLight
 (this.d3 || this.d3 = {}).DirectionalLight = DirectionalLight
+(this.d3 || this.d3 = {}).PointLight = PointLight
 (this.d3 || this.d3 = {}).LightParser = LightParser
 

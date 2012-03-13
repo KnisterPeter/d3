@@ -42,11 +42,17 @@ class Node
 
   render: (context, renderer, mvMatrix) ->
     context.push()
+
+    pointLights = []
     for light in @lights
-      if light instanceof d3.DirectionalLight
+      if light instanceof d3.PointLight
+        pointLights.push(light)
+      else if light instanceof d3.DirectionalLight
         context.set('directional', light)
       else
         context.set('ambient', light)
+    context.set('point', pointLights)
+
     mvMatrix = mvMatrix.dup()
     mvMatrix.multiply(d3.Math.Matrix.make(@orientation, @position, @scale))
     @renderable.render(context, renderer, mvMatrix) if @renderable
