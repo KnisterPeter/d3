@@ -61,8 +61,12 @@ class WebGLRenderer
       vShader = "#define tex0\n" + vShader
       fShader = "#define tex0\n" + fShader
     if opts.lighting
-      vShader = "#define lighting\n" + vShader
-      fShader = "#define lighting\n" + fShader
+      if opts.lighting is "fragment"
+        shaderType = "#define light_per_fragment\n"
+      else
+        shaderType = ""
+      vShader = "#define lighting\n" + shaderType + vShader
+      fShader = "#define lighting\n" + shaderType + fShader
     program = @gl.createProgram()
     @gl.attachShader(program, this.getShader(@gl.VERTEX_SHADER, vShader))
     @gl.attachShader(program, this.getShader(@gl.FRAGMENT_SHADER, fShader))
@@ -86,7 +90,7 @@ class WebGLRenderer
       program["aVertexNormal"] = @gl.getAttribLocation(program, "aVertexNormal")
       @gl.enableVertexAttribArray(program["aVertexNormal"])
       program["uAmbientColor"] = @gl.getUniformLocation(program, "uAmbientColor")
-      program["uLightingDirection"] = @gl.getUniformLocation(program, "uLightingDirection")
+      program["uDiffuseDirection"] = @gl.getUniformLocation(program, "uDiffuseDirection")
       program["uDirectionalColor"] = @gl.getUniformLocation(program, "uDirectionalColor")
       program["uNMatrix"] = @gl.getUniformLocation(program, "uNMatrix")
       for n in [0..WebGLProgram.MAX_LIGHT]
@@ -160,7 +164,7 @@ class WebGLRenderer
     if program.opts.lighting
       @gl.vertexAttribPointer(program["aVertexNormal"], 3, @gl.FLOAT, false, buffer.stride, buffer['vn'])
       @gl.uniform3fv(program["uAmbientColor"], context.get('ambient').getColor())
-      @gl.uniform3fv(program["uLightingDirection"], context.get('directional').getDirection())
+      @gl.uniform3fv(program["uDiffuseDirection"], context.get('directional').getDirection())
       @gl.uniform3fv(program["uDirectionalColor"], context.get('directional').getColor())
       @gl.uniformMatrix3fv(program["uNMatrix"], false, mvMatrix.dup().inverse().transpose().mat3())
       for n in [0..WebGLProgram.MAX_LIGHT]
@@ -186,16 +190,21 @@ class WebGLProgram
 #define NUM_LIGHTS #{this.MAX_LIGHT}
     attribute vec3 aVertexNormal;
     uniform vec3 uAmbientColor;
-    uniform vec3 uLightingDirection;
+    uniform vec3 uDiffuseDirection;
     uniform vec3 uDirectionalColor;
     uniform mat3 uNMatrix;
     varying vec3 vLightWeighting;
+#ifdef light_per_fragment
+    varying vec3 vTransformedNormal;
+    varying vec4 vPosition;
+#else
     struct point_light {
       bool enabled;
       vec3 pos;
       vec3 col;
     };
     uniform point_light uLight[NUM_LIGHTS];
+#endif
 #endif
 
 #ifdef color
@@ -222,14 +231,21 @@ class WebGLProgram
 #endif
 #ifdef lighting
       vec3 transformedNormal = uNMatrix * aVertexNormal;
-      float weight = max(dot(transformedNormal, uLightingDirection), 0.0);
+      float weight = max(dot(transformedNormal, uDiffuseDirection), 0.0);
       vLightWeighting = uAmbientColor + uDirectionalColor * weight;
 
-      if (uLight[0].enabled) {
-        vec3 direction = normalize(uLight[0].pos - mvPosition.xyz);
-        weight = max(dot(transformedNormal, direction), 0.0);
-        vLightWeighting += uLight[0].col * weight;
+#ifdef light_per_fragment
+      vTransformedNormal = transformedNormal;
+      vPosition = mvPosition;
+#else
+      for (int i = 0; i < NUM_LIGHTS; i++) {
+        if (uLight[i].enabled) {
+          vec3 direction = normalize(uLight[i].pos - mvPosition.xyz);
+          weight = max(dot(transformedNormal, direction), 0.0);
+          vLightWeighting += uLight[i].col * weight;
+        }
       }
+#endif
 #endif
     }
   """
@@ -237,7 +253,18 @@ class WebGLProgram
     precision mediump float;
 
 #ifdef lighting
+#define NUM_LIGHTS #{this.MAX_LIGHT}
     varying vec3 vLightWeighting;
+#ifdef light_per_fragment
+    varying vec3 vTransformedNormal;
+    varying vec4 vPosition;
+    struct point_light {
+      bool enabled;
+      vec3 pos;
+      vec3 col;
+    };
+    uniform point_light uLight[NUM_LIGHTS];
+#endif
 #endif
 
 #ifdef color
@@ -259,7 +286,19 @@ class WebGLProgram
       gl_FragColor = gl_FragColor * texture2D(uSamplerTex0, vec2(vTextureCoord.s, vTextureCoord.t));
 #endif
 #ifdef lighting
+#ifdef light_per_fragment
+      vec3 lightWeighting = vLightWeighting;
+      for (int i = 0; i < NUM_LIGHTS; i++) {
+        if (uLight[i].enabled) {
+          vec3 direction = normalize(uLight[i].pos - vPosition.xyz);
+          float weight = max(dot(vTransformedNormal, direction), 0.0);
+          lightWeighting += uLight[i].col * weight;
+        }
+      }
+      gl_FragColor = vec4(gl_FragColor.rgb * lightWeighting, gl_FragColor.a);
+#else
       gl_FragColor = vec4(gl_FragColor.rgb * vLightWeighting, gl_FragColor.a);
+#endif
 #endif
     }
   """

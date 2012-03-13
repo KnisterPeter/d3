@@ -93,7 +93,7 @@
         ]
       },
       "material": {
-        "lighting": true,
+        "lighting": "fragment",
         "textures": [
           {"name": "../resources/crate.gif", "filter": "mipmap"}
         ]
@@ -131,7 +131,7 @@
           "name": "dice2",
           "position": [0, 3, 0],
           "orientation": [0, 0, 90],
-          "scale": [0.5, 0.5, 0.5],
+          "scale": [1.25, 1.25, 1.25],
           "renderable": "test:mesh2",
           "lights": [
             {
@@ -143,8 +143,8 @@
             {
               "type": "d3.Light",
               "mode": "point",
-              "color": [0, 1, 0],
-              "position": [10, 0, 0]
+              "color": [1, 1, 1],
+              "position": [1.5, 0, 0]
             }
           ]
         }
