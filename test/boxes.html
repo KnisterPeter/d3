@@ -1,0 +1,89 @@
+<html>
+<head>
+  <title>D3 Test and Demo Suite</title>
+  <style type="text/css">
+    #fps {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <div id="fps"></div>
+
+  <script type="text/javascript" src="../src/coffee-script.js"></script>
+  <script type="text/javascript" src="../src/ewgl.js"></script>
+  <script type="text/coffeescript" src="../src/core.js"></script>
+  <script type="text/coffeescript" src="../src/input.js"></script>
+  <script type="text/coffeescript" src="../src/math.js"></script>
+  <script type="text/coffeescript" src="../src/graph.js"></script>
+  <script type="text/coffeescript" src="../src/light.js"></script>
+  <script type="text/coffeescript" src="../src/renderable.js"></script>
+  <script type="text/coffeescript" src="../src/webgl.js"></script>
+  <script type="text/coffeescript">
+    class FPS
+      constructor: (@id) ->
+        @fps = 0
+        @fpsTimestamp = new Date().getTime()
+      tick: (timestamp) ->
+        @fps++
+        if timestamp - @fpsTimestamp > 1000
+          this.draw()
+          @fps = 0
+          @fpsTimestamp = timestamp
+      draw: -> 
+        document.getElementById(@id).innerHTML = @fps + " FPS";
+
+    root = null
+    quad = null
+    dice = null
+    dice2 = null
+
+    core = new d3.Core('canvas', 
+      fullscreen: true
+      renderer: 
+        type: 'WebGL'
+        fov: 45
+      )
+    input = new d3.Input(preventDefault: false)
+    core.load '../resources/test.library', (library) ->
+      root = library.getNode('root')
+      quad = library.getNode('child')
+      dice = library.getNode('dice')
+      dice2 = library.getNode('dice2')
+      core.getRoot().addChild(root)
+    fps = new FPS('fps')
+    last = new Date().getTime()
+    core.run (timestamp) ->
+      core.render()
+
+      if input.isKeyPressed d3.Input.KEY_UP
+        root.move([0, 0.1, 0])
+      if input.isKeyPressed d3.Input.KEY_DOWN
+        root.move([0, -0.1, 0])
+      if input.isKeyPressed d3.Input.KEY_LEFT
+        root.move([-0.1, 0, 0])
+      if input.isKeyPressed d3.Input.KEY_RIGHT
+        root.move([0.1, 0, 0])
+      if input.isKeyPressed d3.Input.KEY_PAGE_DOWN
+        root.move([0, 0, -0.1])
+      if input.isKeyPressed d3.Input.KEY_PAGE_UP
+        root.move([0, 0, 0.1])
+
+      fps.tick(timestamp)
+      diff = (timestamp - last) / 60
+      if dice
+        dice.pitch(-3 * diff)
+        dice.yaw(5 * diff)
+      if dice2
+        dice2.pitch(3 * diff)
+        dice2.yaw(-5 * diff)
+      quad.roll(4 * diff) if quad 
+      last = timestamp
+  </script>
+</body>
+</html>
+

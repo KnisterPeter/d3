@@ -1,0 +1,86 @@
+<html>
+<head>
+  <title>D3 Test and Demo Suite</title>
+  <style type="text/css">
+    #fps {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      color: white;
+    }
+    #canvas, #controls {
+      float: left;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="800" height="600"></canvas>
+  <div id="controls">
+    <label><input type="checkbox" id="ambient" /> Ambient</label>
+    <label><input type="checkbox" id="diffuse" /> Diffuse</label>
+    <label><input type="checkbox" id="specular" /> Specular</label>
+  </div>
+  <div id="fps"></div>
+
+  <script type="text/javascript" src="../src/coffee-script.js"></script>
+  <script type="text/javascript" src="../src/ewgl.js"></script>
+  <script type="text/coffeescript" src="../src/core.js"></script>
+  <script type="text/coffeescript" src="../src/input.js"></script>
+  <script type="text/coffeescript" src="../src/math.js"></script>
+  <script type="text/coffeescript" src="../src/graph.js"></script>
+  <script type="text/coffeescript" src="../src/light.js"></script>
+  <script type="text/coffeescript" src="../src/renderable.js"></script>
+  <script type="text/coffeescript" src="../src/webgl.js"></script>
+  <script type="text/coffeescript">
+    class FPS
+      constructor: (@id) ->
+        @fps = 0
+        @fpsTimestamp = new Date().getTime()
+      tick: (timestamp) ->
+        @fps++
+        if timestamp - @fpsTimestamp > 1000
+          this.draw()
+          @fps = 0
+          @fpsTimestamp = timestamp
+      draw: ->
+        document.getElementById(@id).innerHTML = @fps + " FPS";
+
+    root = null
+    renderable = null
+
+    ambientLight = new d3.AmbientLight([0.2, 0.2, 0.2])
+    ambientCheck = document.getElementById('ambient')
+    ambientCheck.onchange = ->
+      if ambientCheck.checked
+        root.addLight(ambientLight)
+      else
+        root.removeLight(ambientLight)
+    document.getElementById('diffuse').onchange = ->
+      console.log('diffuse')
+    document.getElementById('specular').onchange = ->
+      console.log('specular')
+
+    core = new d3.Core('canvas',
+      fullscreen: false
+      renderer:
+        type: 'WebGL'
+        fov: 45
+      )
+    input = new d3.Input(preventDefault: false)
+    core.load '../resources/test2.library?' + new Date().getTime(), (library) ->
+      root = library.getNode('lighting')
+      renderable = library.getNode('renderable')
+      core.getRoot().addChild(root)
+    fps = new FPS('fps')
+    last = new Date().getTime()
+    core.run (timestamp) ->
+      core.render()
+
+      fps.tick(timestamp)
+      diff = (timestamp - last) / 60
+
+      last = timestamp
+  </script>
+</body>
+</html>
+

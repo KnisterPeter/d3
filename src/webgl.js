@@ -6,7 +6,7 @@ class WebGLRenderer
   _createGLContext: (canvas) ->
     for name in ['webgl', 'experimental-webgl']
       gl = canvas.getContext(name)
-      if gl 
+      if gl
         return gl
 
   init: (options) ->
@@ -20,9 +20,9 @@ class WebGLRenderer
 
   makePerspective: (options) ->
     @perspectiveMatrix = d3.Math.Matrix.makePerspective(
-      options.fov, 
-      options.width / options.height, 
-      options.near || 0.1, 
+      options.fov,
+      options.width / options.height,
+      options.near || 0.1,
       options.far || 1000.0)
 
   createTexture: (data) ->
@@ -52,24 +52,15 @@ class WebGLRenderer
 
   compileProgram: (data, opts) ->
     d3.Core.trace('Compiling shader', opts)
-    vShader = data.vertexShader
-    fShader = data.fragmentShader
-    if opts.color
-      vShader = "#define color\n" + vShader
-      fShader = "#define color\n" + fShader
-    if opts.tex0
-      vShader = "#define tex0\n" + vShader
-      fShader = "#define tex0\n" + fShader
+    defines = []
+    defines.push('color') if opts.color
+    defines.push('tex0') if opts.tex0
     if opts.lighting
-      if opts.lighting is "fragment"
-        shaderType = "#define light_per_fragment\n"
-      else
-        shaderType = ""
-      vShader = "#define lighting\n" + shaderType + vShader
-      fShader = "#define lighting\n" + shaderType + fShader
+      defines.push('lighting')
+      defines.push('light_per_fragment') if opts.lightingType is "fragment"
     program = @gl.createProgram()
-    @gl.attachShader(program, this.getShader(@gl.VERTEX_SHADER, vShader))
-    @gl.attachShader(program, this.getShader(@gl.FRAGMENT_SHADER, fShader))
+    @gl.attachShader(program, this.getShader(@gl.VERTEX_SHADER, this.preprocess(data.vertexShader, defines)))
+    @gl.attachShader(program, this.getShader(@gl.FRAGMENT_SHADER, this.preprocess(data.fragmentShader, defines)))
     @gl.linkProgram(program)
     if not @gl.getProgramParameter(program, @gl.LINK_STATUS)
       throw "Unable to initialize the shader program."
@@ -103,35 +94,66 @@ class WebGLRenderer
 
     return program
 
+  preprocess: (lines, defines) ->
+    output = []
+    stack = []
+    SKIP = 3
+    state = 1
+    for line in lines
+      if line.match(/#ifdef ([\S]+)/)
+        stack.push(state)
+        if RegExp.$1 in defines
+          state = 2
+        else
+          state = SKIP
+      else if line.match(/#else/)
+        peek = stack[stack.length - 1]
+        if peek is SKIP
+          state = SKIP
+        else if state is 2
+          state = SKIP
+        else if state is SKIP
+          state = 2
+      else if line.match(/#endif/)
+        state = stack.pop()
+      else
+        if state is 1 # outside conditionals
+          output.push(line)
+        else if state is 2 # in defined branch
+          output.push(line)
+    return output.join("\n")
+
   getShader: (type, source) ->
+    d3.Core.trace('Shader source\n', source)
     shader = @gl.createShader(type)
     @gl.shaderSource(shader, source)
     @gl.compileShader(shader)
     if not @gl.getShaderParameter(shader, @gl.COMPILE_STATUS)
-      throw "An error occurred compiling the shaders: " + @gl.getShaderInfoLog(shader)
+      throw "An error occurred compiling the shaders:\n" + source + "\n" + @gl.getShaderInfoLog(shader)
     return shader
 
   createBuffer: (data) ->
-    d3.Core.trace('Creating buffers')
+    d3.Core.trace('Creating buffers', data)
     buffer = @gl.createBuffer()
+    buffer.data = data.vertices
     @gl.bindBuffer(@gl.ARRAY_BUFFER, buffer)
-    @gl.bufferData(@gl.ARRAY_BUFFER, new Float32Array(data.vertices), @gl.STATIC_DRAW)
+    @gl.bufferData(@gl.ARRAY_BUFFER, new Float32Array(buffer.data), @gl.STATIC_DRAW)
 
     buffer.indices = @gl.createBuffer()
     buffer.indices.data = data.indices
     @gl.bindBuffer(@gl.ELEMENT_ARRAY_BUFFER, buffer.indices)
-    @gl.bufferData(@gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data.indices), @gl.STATIC_DRAW)
+    @gl.bufferData(@gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(buffer.indices.data), @gl.STATIC_DRAW)
 
-    buffer.items = data.indices.length
+    buffer.items = buffer.indices.data.length
 
     offset = 0
     for n in data.type
-      buffer[n] = offset * 4
+      buffer[n] = offset * Float32Array.BYTES_PER_ELEMENT
       offset += 3 if n is 'vp'
       offset += 3 if n is 'vn'
       offset += 4 if n is 'vc'
       offset += 2 if n is 't0'
-    buffer.stride = offset * 4
+    buffer.stride = offset * Float32Array.BYTES_PER_ELEMENT
 
     return buffer
 
@@ -163,16 +185,21 @@ class WebGLRenderer
       @gl.uniform1i(program.tex0, 0)
     if program.opts.lighting
       @gl.vertexAttribPointer(program["aVertexNormal"], 3, @gl.FLOAT, false, buffer.stride, buffer['vn'])
-      @gl.uniform3fv(program["uAmbientColor"], context.get('ambient').getColor())
-      @gl.uniform3fv(program["uDiffuseDirection"], context.get('directional').getDirection())
-      @gl.uniform3fv(program["uDirectionalColor"], context.get('directional').getColor())
       @gl.uniformMatrix3fv(program["uNMatrix"], false, mvMatrix.dup().inverse().transpose().mat3())
-      for n in [0..WebGLProgram.MAX_LIGHT]
-        pointLight = context.get('point')[n]
-        if pointLight
+
+      light = context.get('ambient')
+      if light
+        @gl.uniform3fv(program["uAmbientColor"], light.getColor())
+      light = context.get('directional')
+      if light
+        @gl.uniform3fv(program["uDiffuseDirection"], light.getDirection())
+        @gl.uniform3fv(program["uDirectionalColor"], light.getColor())
+      for n in [0...WebGLProgram.MAX_LIGHT]
+        light = context.get('point')[n]
+        if light
           @gl.uniform1i(program["uLight[" + n + "].enabled"], true)
-          @gl.uniform3fv(program["uLight[" + n + "].pos"], pointLight.getPosition())
-          @gl.uniform3fv(program["uLight[" + n + "].col"], pointLight.getColor())
+          @gl.uniform3fv(program["uLight[" + n + "].pos"], light.getPosition())
+          @gl.uniform3fv(program["uLight[" + n + "].col"], light.getColor())
         else
           @gl.uniform1i(program["uLight[" + n + "].enabled"], false)
 
@@ -185,6 +212,16 @@ class WebGLProgram
   @MAX_LIGHT: 8
   @DEFAULT_VERTEX: """
     attribute vec3 aVertexPosition;
+
+#ifdef color
+    attribute vec4 aVertexColor;
+    varying vec4 vColor;
+#endif
+
+#ifdef tex0
+    attribute vec2 aTextureCoord0;
+    varying vec2 vTextureCoord;
+#endif
 
 #ifdef lighting
 #define NUM_LIGHTS #{this.MAX_LIGHT}
@@ -205,16 +242,6 @@ class WebGLProgram
     };
     uniform point_light uLight[NUM_LIGHTS];
 #endif
-#endif
-
-#ifdef color
-    attribute vec4 aVertexColor;
-    varying vec4 vColor;
-#endif
-
-#ifdef tex0
-    attribute vec2 aTextureCoord0;
-    varying vec2 vTextureCoord;
 #endif
 
     uniform mat4 uMVMatrix;
@@ -252,6 +279,15 @@ class WebGLProgram
   @DEFAULT_FRAGMENT: """
     precision mediump float;
 
+#ifdef color
+    varying vec4 vColor;
+#endif
+
+#ifdef tex0
+    varying vec2 vTextureCoord;
+    uniform sampler2D uSamplerTex0;
+#endif
+
 #ifdef lighting
 #define NUM_LIGHTS #{this.MAX_LIGHT}
     varying vec3 vLightWeighting;
@@ -265,15 +301,6 @@ class WebGLProgram
     };
     uniform point_light uLight[NUM_LIGHTS];
 #endif
-#endif
-
-#ifdef color
-    varying vec4 vColor;
-#endif
-
-#ifdef tex0
-    varying vec2 vTextureCoord;
-    uniform sampler2D uSamplerTex0;
 #endif
 
     void main(void) {
@@ -306,8 +333,8 @@ class WebGLProgram
   constructor: (@data) ->
     @variants = {}
     @data = {} if not @data
-    @data.vertexShader = @data.vertexShader?.join("\n") || WebGLProgram.DEFAULT_VERTEX
-    @data.fragmentShader = @data.fragmentShader?.join("\n") || WebGLProgram.DEFAULT_FRAGMENT
+    @data.vertexShader = @data.vertexShader || WebGLProgram.DEFAULT_VERTEX.split("\n")
+    @data.fragmentShader = @data.fragmentShader || WebGLProgram.DEFAULT_FRAGMENT.split("\n")
 
   getName: -> @data.name
 
@@ -325,4 +352,3 @@ class ProgramParser
 
 (this.d3 || this.d3 = {}).WebGLRenderer = WebGLRenderer
 (this.d3 || this.d3 = {}).ProgramParser = ProgramParser
-

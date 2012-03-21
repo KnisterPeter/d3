@@ -23,14 +23,24 @@ class Core
     options?.renderer?.height = @canvas.getAttribute('height')
     @parserFactory = new ParserFactory()
     @libraries = {}
-    @root = new d3.Node()
+    @root = this.createRoot()
     this.createRenderer(options.renderer.type, options.renderer)
+
+  createRoot: ->
+    root = new d3.Node()
+    root.addLight(new d3.AmbientLight([0, 0, 0]))
+    root.addLight(new d3.DirectionalLight([0, 0, 0], [0, 0, 0]))
+    return root
 
   getRoot: -> @root
   createRenderer: (type, options) -> @renderer = new (d3[type + 'Renderer'])(@canvas, options)
   getRenderer: -> @renderer
   addLibrary: (name, library) -> @libraries[name] = library
-  getLibrary: (name) -> @libraries[name]
+  getLibrary: (name) -> 
+    if @libraries[name]
+      @libraries[name]
+    else
+      throw new d3.Error("Unknown Library " + name)
   load: (path, callback) -> @parserFactory.load(this, path, callback)
   render: -> 
     @renderer.render(new RenderContext(), @root)
@@ -114,8 +124,13 @@ class LibraryParser
     library.addNode(@factory.parse(core, node)) for node in data.nodes
     return library
 
+class Error
+  constructor: (@message, @cause) ->
+  toString: -> @message + if @cause then "\n" + @cause else ""
+
 (this.d3 || this.d3 = {}).Core = Core
 (this.d3 || this.d3 = {}).Library = Library
 (this.d3 || this.d3 = {}).LibraryParser = LibraryParser
+(this.d3 || this.d3 = {}).Error = Error
 this.requestAnimationFrame = this.requestAnimationFrame || this.webkitRequestAnimationFrame || this.mozRequestAnimationFrame
 

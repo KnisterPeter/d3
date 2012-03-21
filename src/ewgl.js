@@ -760,7 +760,8 @@
 		
 	vector.prototype.normalize = function(){
 		var a = this.elements,
-			l = 1/Math.sqrt(a[0]*a[0] + a[1]*a[1] + a[2]*a[2]);
+      s = Math.sqrt(a[0]*a[0] + a[1]*a[1] + a[2]*a[2])
+			l = s != 0 ? 1/s : 0;
 			
 		a[0] = a[0]*l;
 		a[1] = a[1]*l;

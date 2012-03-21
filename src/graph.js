@@ -24,6 +24,7 @@ class Node
     return null
 
   addLight: (light) -> @lights.push(light)
+  removeLight: (light) -> @lights = (element for element in @lights when element isnt light)
 
   setPosition: (v) -> @position.setElements(v)
   setOrientation: (q) -> 
@@ -65,20 +66,23 @@ class NodeParser
 
   parse: (core, data) ->
     d3.Core.trace('Parsing node', data.name)
-    node = new Node(data.name)
-    node.setPosition(data.position) if data.position
-    node.setOrientation(data.orientation) if data.orientation
-    node.setScale(data.scale) if data.scale
-    node.addChild(@factory.parse(core, child)) for child in data.children if data.children
-    node.addLight(@factory.parse(core, light)) for light in data.lights if data.lights
-    if data.renderable
-      renderable = data.renderable
-      if d3.Core.isString(renderable)
-        [library, name] = renderable.split(':')
-        node.setRenderable(core.getLibrary(library).getRenderable(name))
-      else
-        node.setRenderable(@factory.parse(core, renderable))
-    return node
+    try
+      node = new Node(data.name)
+      node.setPosition(data.position) if data.position
+      node.setOrientation(data.orientation) if data.orientation
+      node.setScale(data.scale) if data.scale
+      node.addChild(@factory.parse(core, child)) for child in data.children if data.children
+      node.addLight(@factory.parse(core, light)) for light in data.lights if data.lights
+      if data.renderable
+        renderable = data.renderable
+        if d3.Core.isString(renderable)
+          [library, name] = renderable.split(':')
+          node.setRenderable(core.getLibrary(library).getRenderable(name))
+        else
+          node.setRenderable(@factory.parse(core, renderable))
+      return node
+    catch error
+      throw new d3.Error("Failed to parse node " + name, error)
 
 (this.d3 || this.d3 = {}).Node = Node
 (this.d3 || this.d3 = {}).NodeParser = NodeParser

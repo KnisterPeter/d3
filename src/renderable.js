@@ -19,9 +19,10 @@ class MeshParser
     mesh.setMaterial(data.material) if data?.material
 
     opts = {}
-    opts.color = true if 'vc' in data?.buffer?.type
-    opts.tex0 = true if data?.material?.textures?[0] and 't0' in data?.buffer?.type
-    opts.lighting = data.material.lighting if data?.material?.lighting and 'vn' in data?.buffer?.type
+    opts.color = 'vc' in data?.buffer?.type
+    opts.tex0 = data?.material?.textures?[0] and 't0' in data?.buffer?.type
+    opts.lighting = data?.material?.lighting and 'vn' in data?.buffer?.type
+    opts.lightingType = data.material?.lighting
 
     if data.program
       [library, name] = data.program.split(':')
